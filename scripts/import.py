@@ -1,50 +1,7 @@
 from dbmake import DBMake
-import glob
-import csv
-import sys
-from datetime import datetime
-import zipfile
-import codecs
 
-def parse_date(s):
-    if not s:
-        return None
-    try:
-        return datetime.strptime(s, '%d/%m/%Y')
-    except:
-        raise ValueError("Can't parse " + s)
-
-def process_companies_csv(conn, f):
-    rdr = csv.reader(f)
-    next(rdr) # Skip header
-    count = 0
-    curs = conn.cursor()
-    for line in rdr:
-        dissolution_date = parse_date(line[13])
-        incorporation_date = parse_date(line[14])
-
-        sql = "INSERT INTO companies VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (line[0], line[1], line[10], line[11], line[12],
-        dissolution_date, incorporation_date, line[26], line[27],
-        line[28], line[9])
-
-        curs.execute(sql, values)
-        count += 1
-        if count % 10000 == 0:
-            print(count)
-            conn.commit()
-
-def extract_companies_zip(fname, conn):
-    zip = zipfile.ZipFile(fname)
-    names = list(zip.namelist())
-    print("%s : %d files" % (fname, len(names)))
-    for name in names:
-        f = codecs.iterdecode(zip.open(name), 'utf-8')
-        process_companies_csv(conn, f)
-
-def fill_companies_table(conn):
-    for f in glob.glob("../data/register/zip/*.zip"):
-        extract_companies_zip(f, conn)
+from companies_register import fill_companies_table
+from uk_postcodes import fill_postcodes_table
 
 db = DBMake()
 db.table('companies',
@@ -63,8 +20,17 @@ db.table('companies',
     """,
     fill=fill_companies_table)
 
+db.table('uk_postcodes',
+    create="""CREATE TABLE IF NOT EXISTS uk_postcodes (
+        id SERIAL,
+        postcode VARCHAR);
+        SELECT AddGeometryColumn ('public','uk_postcodes','geom',4326,'POINT',2);
+    """,
+    fill=fill_postcodes_table)
+
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
+db.table('lsoa_2001_ew_bfe_v2', sql_file='../data/lsoa/data/lsoa_2001_ew_bfe_v2.sql')
 
 db.materialized_view('postcode_districts_clean',
     create="""CREATE MATERIALIZED VIEW postcode_districts_clean AS
@@ -78,6 +44,19 @@ db.materialized_view('postcode_districts_clean',
             OR ST_GeometryType(g.geom) = 'ST_Polygon'"""
 )
 
+db.materialized_view('lsoa_2001_ew_bfe_v2_clean',
+    create="""CREATE MATERIALIZED VIEW lsoa_2001_ew_bfe_v2_clean AS
+        SELECT
+            g.code,
+            g.name,
+            ST_SetSRID(ST_Transform(g.geom, 900913), 900913) as geom,
+            row_number() over() AS gid
+        FROM
+            (SELECT lsoa01cd as code, lsoa01nm as name, (ST_Dump(ST_MakeValid(geom))).geom FROM lsoa_2001_ew_bfe_v2) AS g
+        WHERE ST_GeometryType(g.geom) = 'ST_MultiPolygon'
+            OR ST_GeometryType(g.geom) = 'ST_Polygon'"""
+)
+
 db.materialized_view('companies_by_postcode_district',
     create="""CREATE MATERIALIZED VIEW companies_by_postcode_district AS
         SELECT
@@ -87,6 +66,38 @@ db.materialized_view('companies_by_postcode_district',
             companies c
         GROUP BY postcode_district"""
     )
+
+db.materialized_view('companies_geocoded',
+    create = """ CREATE MATERIALIZED VIEW companies_geocoded AS
+        SELECT
+            c.*,
+            ST_Transform(p.geom, 900913) as geom
+        FROM
+            companies c
+        LEFT JOIN uk_postcodes p ON p.postcode = c.postcode """)
+
+db.index('companies_geocoded_index', create="CREATE INDEX companies_geocoded_index ON companies_geocoded USING GIST(geom)")
+db.index('lsoa_2001_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2001_ew_bfe_v2_clean_index ON lsoa_2001_ew_bfe_v2_clean USING GIST(geom)")
+
+db.materialized_view('companies_by_lsoa',
+    create="""CREATE MATERIALIZED VIEW companies_by_lsoa AS
+    with g AS (SELECT
+            l.name,
+            count(c.geom) as count
+        FROM lsoa_2001_ew_bfe_v2_clean l
+        LEFT JOIN companies_geocoded c ON ST_contains(l.geom, c.geom)
+        GROUP BY l.name)
+        SELECT g.name, g.count, ll.geom FROM g LEFT JOIN lsoa_2001_ew_bfe_v2_clean ll ON ll.name = g.name
+        """)
+
+db.materialized_view('companies_by_lsoa_london',
+    create="""CREATE MATERIALIZED VIEW companies_by_lsoa_london AS
+        select c.* from companies_by_lsoa c inner join lsoa_2011_london_gen_mhw on lsoa11nm = name
+        """
+    )
+
+db.index('companies_by_lsoa_london_index',
+    create="CREATE INDEX companies_by_lsoa_london_index ON companies_by_lsoa_london USING GIST(geom)")
 
 db.materialized_view('postcode_district_company_count',
     create="""CREATE MATERIALIZED VIEW postcode_district_company_count AS

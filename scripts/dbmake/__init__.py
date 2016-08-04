@@ -33,6 +33,7 @@ class DBMake(object):
             raise ValueError("create or sql_file must be set")
 
         def _action(conn):
+            print("Making", name)
             curs = conn.cursor()
             create_table = False
 
@@ -44,7 +45,6 @@ class DBMake(object):
                 sql = "SELECT to_regclass('{name}')".format(name=name)
                 curs.execute(sql)
                 create_table = curs.fetchone()[0] is None
-
             if create_table:
                 if create:
                     curs.execute(create)
