@@ -1,5 +1,7 @@
 import psycopg2
 import argparse
+import subprocess
+import os
 
 class DBMake(object):
     def __init__(self):
@@ -49,7 +51,10 @@ class DBMake(object):
                 if create:
                     curs.execute(create)
                 else:
-                    curs.execute(open(sql_file).read())
+                    env = os.environ.copy()
+                    env['PGPASSWORD'] = self.db_args['password']
+                    command = "psql -h {host} -U {user} {dbname} < {fname}".format(fname=sql_file, **self.db_args)
+                    subprocess.call(command, shell=True, env=env)
                 print("Creating:", name)
                 if fill is not None:
                     fill(conn)
@@ -59,8 +64,10 @@ class DBMake(object):
 
         self.tasks.append(_action)
 
-    def run(self, conn_str):
+    def run(self, **kwargs):
+        conn_str = "host={host} dbname={dbname} user={user} password={password}".format(**kwargs)
         conn = psycopg2.connect(conn_str)
+        self.db_args = kwargs
 
         for task in self.tasks:
             task(conn)

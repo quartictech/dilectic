@@ -31,6 +31,7 @@ db.table('uk_postcodes',
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
 db.table('lsoa_2001_ew_bfe_v2', sql_file='../data/lsoa/data/lsoa_2001_ew_bfe_v2.sql')
+db.table('lsoa_2011_ew_bfe_v2', sql_file='../data/lsoa/data/lsoa_2011_ew_bfe_v2.sql')
 
 db.materialized_view('postcode_districts_clean',
     create="""CREATE MATERIALIZED VIEW postcode_districts_clean AS
@@ -57,6 +58,19 @@ db.materialized_view('lsoa_2001_ew_bfe_v2_clean',
             OR ST_GeometryType(g.geom) = 'ST_Polygon'"""
 )
 
+db.materialized_view('lsoa_2011_ew_bfe_v2_clean',
+    create="""CREATE MATERIALIZED VIEW lsoa_2011_ew_bfe_v2_clean AS
+        SELECT
+            g.code,
+            g.name,
+            ST_SetSRID(ST_Transform(g.geom, 900913), 900913) as geom,
+            row_number() over() AS gid
+        FROM
+            (SELECT lsoa11cd as code, lsoa11nm as name, (ST_Dump(ST_MakeValid(geom))).geom FROM lsoa_2011_ew_bfe_v2) AS g
+        WHERE ST_GeometryType(g.geom) = 'ST_MultiPolygon'
+            OR ST_GeometryType(g.geom) = 'ST_Polygon'"""
+)
+
 db.materialized_view('companies_by_postcode_district',
     create="""CREATE MATERIALIZED VIEW companies_by_postcode_district AS
         SELECT
@@ -78,21 +92,22 @@ db.materialized_view('companies_geocoded',
 
 db.index('companies_geocoded_index', create="CREATE INDEX companies_geocoded_index ON companies_geocoded USING GIST(geom)")
 db.index('lsoa_2001_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2001_ew_bfe_v2_clean_index ON lsoa_2001_ew_bfe_v2_clean USING GIST(geom)")
+db.index('lsoa_2011_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2011_ew_bfe_v2_clean_index ON lsoa_2011_ew_bfe_v2_clean USING GIST(geom)")
 
 db.materialized_view('companies_by_lsoa',
     create="""CREATE MATERIALIZED VIEW companies_by_lsoa AS
     with g AS (SELECT
-            l.name,
+            l.code,
             count(c.geom) as count
-        FROM lsoa_2001_ew_bfe_v2_clean l
+        FROM lsoa_2011_ew_bfe_v2_clean l
         LEFT JOIN companies_geocoded c ON ST_contains(l.geom, c.geom)
-        GROUP BY l.name)
-        SELECT g.name, g.count, ll.geom FROM g LEFT JOIN lsoa_2001_ew_bfe_v2_clean ll ON ll.name = g.name
+        GROUP BY l.code)
+        SELECT g.code, ll.name, g.count, ll.geom FROM g LEFT JOIN lsoa_2011_ew_bfe_v2_clean ll ON ll.code = g.code
         """)
 
 db.materialized_view('companies_by_lsoa_london',
     create="""CREATE MATERIALIZED VIEW companies_by_lsoa_london AS
-        select c.* from companies_by_lsoa c inner join lsoa_2011_london_gen_mhw on lsoa11nm = name
+        select c.* from companies_by_lsoa c inner join lsoa_2011_london_gen_mhw on lsoa11cd = code
         """
     )
 
@@ -112,4 +127,4 @@ db.materialized_view('postcode_district_company_count',
 db.index('postcode_district_company_count_index',
     create="CREATE INDEX postcode_district_company_count_index ON postcode_district_company_count USING GIST(geom)")
 
-db.run('host=localhost dbname=postgres user=postgres password=dilectic')
+db.run(host="localhost", dbname="postgres",user="postgres",password="dilectic")
