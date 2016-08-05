@@ -1,7 +1,7 @@
 from dbmake import DBMake
-
 from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
+import os.path
 
 db = DBMake()
 db.table('companies',
@@ -30,8 +30,8 @@ db.table('uk_postcodes',
 
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
-db.table('lsoa_2001_ew_bfe_v2', sql_file='../data/lsoa/data/lsoa_2001_ew_bfe_v2.sql')
-db.table('lsoa_2011_ew_bfe_v2', sql_file='../data/lsoa/data/lsoa_2011_ew_bfe_v2.sql')
+db.table('lsoa_2001_ew_bfe_v2', sql_file='lsoa/data/lsoa_2001_ew_bfe_v2.sql')
+db.table('lsoa_2011_ew_bfe_v2', sql_file='lsoa/data/lsoa_2011_ew_bfe_v2.sql')
 
 db.materialized_view('postcode_districts_clean',
     create="""CREATE MATERIALIZED VIEW postcode_districts_clean AS
@@ -127,4 +127,5 @@ db.materialized_view('postcode_district_company_count',
 db.index('postcode_district_company_count_index',
     create="CREATE INDEX postcode_district_company_count_index ON postcode_district_company_count USING GIST(geom)")
 
-db.run(host="localhost", dbname="postgres",user="postgres",password="dilectic")
+config_file = os.path.join(os.path.dirname(__file__), '../config.yml')
+db.run(config=config_file)

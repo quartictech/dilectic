@@ -1,8 +1,9 @@
 import csv
+import os.path
 
-def fill_postcodes_table(conn):
+def fill_postcodes_table(conn, data_dir):
     curs = conn.cursor()
-    f = open("../data/ukpostcodes.csv")
+    f = open(os.path.join(data_dir, "ukpostcodes.csv"))
     rdr = csv.reader(f)
     next(rdr)
     for row in rdr:

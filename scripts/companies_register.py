@@ -4,6 +4,7 @@ import sys
 from datetime import datetime
 import zipfile
 import codecs
+import os.path
 
 def parse_date(s):
     if not s:
@@ -41,6 +42,7 @@ def extract_companies_zip(fname, conn):
         f = codecs.iterdecode(zip.open(name), 'utf-8')
         process_companies_csv(conn, f)
 
-def fill_companies_table(conn):
-    for f in glob.glob("../data/register/zip/*.zip"):
+def fill_companies_table(conn, data_dir):
+    path = os.path.join(data_dir, 'register/zip/*.zip')
+    for f in glob.glob(path):
         extract_companies_zip(f, conn)

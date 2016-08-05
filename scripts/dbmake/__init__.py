@@ -2,6 +2,7 @@ import psycopg2
 import argparse
 import subprocess
 import os
+import yaml
 
 class DBMake(object):
     def __init__(self):
@@ -10,12 +11,14 @@ class DBMake(object):
         parser.add_argument('--recreate', dest='recreate', action='store_true')
         parser.set_defaults(feature=False)
         self.args = parser.parse_args()
+        self.config = {}
+        self.data_dir = None
 
     def _drop(self, type):
         if type == "table":
-            return "DROP TABLE {name}"
+            return "DROP TABLE {name} CASCADE"
         elif type == "materialized view":
-            return "DROP MATERIALIZED VIEW {name}"
+            return "DROP MATERIALIZED VIEW {name} CASCADE"
         elif type == "index":
             return "DROP INDEX {name}"
         else:
@@ -52,22 +55,28 @@ class DBMake(object):
                     curs.execute(create)
                 else:
                     env = os.environ.copy()
-                    env['PGPASSWORD'] = self.db_args['password']
-                    command = "psql -h {host} -U {user} {dbname} < {fname}".format(fname=sql_file, **self.db_args)
+                    env['PGPASSWORD'] = self.config['db']['password']
+                    command = "psql -h {db[host]} -U {db[user]} {db[dbname]} < {fname}".format(fname=os.path.join(self.data_dir, sql_file), db=self.config['db'])
                     subprocess.call(command, shell=True, env=env)
                 print("Creating:", name)
                 if fill is not None:
-                    fill(conn)
+                    fill(conn, self.data_dir)
             else:
                 print("Skipping:", name)
             conn.commit()
 
         self.tasks.append(_action)
 
-    def run(self, **kwargs):
-        conn_str = "host={host} dbname={dbname} user={user} password={password}".format(**kwargs)
+    def run(self, config, **kwargs):
+        with open(config) as f:
+            try:
+                self.config = yaml.load(f)
+                print(self.config)
+            except yaml.YAMLError as exc:
+                print(exc)
+        conn_str = "host={db[host]} dbname={db[dbname]} user={db[user]} password={db[password]}".format(db=self.config['db'])
         conn = psycopg2.connect(conn_str)
-        self.db_args = kwargs
+        self.data_dir = os.path.join(os.path.dirname(config), self.config['data_dir'])
 
         for task in self.tasks:
             task(conn)
