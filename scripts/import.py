@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from dbmake import DBMake
 from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
