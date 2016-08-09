@@ -33,6 +33,7 @@ db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
 db.table('lsoa_2001_ew_bfe_v2', sql_file='lsoa/data/lsoa_2001_ew_bfe_v2.sql')
 db.table('lsoa_2011_ew_bfe_v2', sql_file='lsoa/data/lsoa_2011_ew_bfe_v2.sql')
+db.table('lsoa_2011_london_gen_mhw', sql_file='statistical-gis-boundaries-london/ESRI/lsoa_2011_london_gen_mhw.sql')
 
 db.materialized_view('postcode_districts_clean',
     create="""CREATE MATERIALIZED VIEW postcode_districts_clean AS
