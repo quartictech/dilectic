@@ -76,7 +76,7 @@ class DBMake(object):
                 print(exc)
         conn_str = "host={db[host]} dbname={db[dbname]} user={db[user]} password={db[password]}".format(db=self.config['db'])
         conn = psycopg2.connect(conn_str)
-        self.data_dir = os.path.join(os.path.dirname(config), self.config['data_dir'])
+        self.data_dir = os.path.join(os.path.dirname(config), os.path.expanduser(self.config['data_dir']))
 
         for task in self.tasks:
             task(conn)
