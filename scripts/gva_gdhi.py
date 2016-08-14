@@ -3,14 +3,16 @@ wb = open_workbook('/Users/arlogb/quartic/dilectic/data/london_datastore/GVA-GDH
 
 
 def process_gva_sheet(s):
-    years = s.row(0)[3:]
+    years = [int(v.value) for v in s.row(0)[3:]]
+    if years[-1] == 20143:
+        years[-1] = 2014
     insert = []
     for row in range(s.nrows):
         if str(s.cell(row,1).value)[:3] == "UKI":
             for n, v in enumerate(years):
                 r = []
                 r.append(str(s.cell(row,1).value))
-                r.append(int(v.value))
+                r.append(v)
                 r.append(str(s.cell(row,2).value))
                 r.append(int(s.cell(row,n+3).value))
                 insert.append(r)
@@ -29,8 +31,8 @@ def collector(insert, d=None):
     return d
 
 def process_workbook(wb):
-    of_interest = ['GVA', 'GVA Per Head', 'per head Indices',
-                'Headline gross disposable house', 'GDHI per Head']
+    of_interest = ['GVA', 'GVA Per Head', 'per head Indices']
+    special_snowflakes = ['Headline gross disposable house', 'GDHI per Head']
     headers = ['UKI', 'Year', 'Area']
     table = {}
     for s in wb.sheets():
