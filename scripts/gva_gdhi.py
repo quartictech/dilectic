@@ -30,7 +30,10 @@ def process_snowflakes(s):
                 r.append(s.cell(row,0).value)
                 r.append(v)
                 r.append(s.cell(row,1).value)
-                r.append(str(s.cell(row,n+2).value))
+                if s.cell(row,n+2).value == '':
+                    continue
+                else:
+                    r.append(int(s.cell(row,n+2).value))
                 insert.append(r)
     return insert
 
@@ -57,8 +60,8 @@ def process_workbook(wb):
             table = collector(process_gva_sheet(s), table)
         if s.name in special_snowflakes:
             headers.append(s.name)
-            print(process_snowflakes(s))
+            table = collector(process_snowflakes(s), table)
     table['headers'] = headers
     return table
 
-process_workbook(wb)
+print(process_workbook(wb))
