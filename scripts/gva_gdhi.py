@@ -1,5 +1,5 @@
 from xlrd import open_workbook
-wb = open_workbook('/Users/arlogb/quartic/dilectic/data/london_datastore/GVA-GDHI-nuts3-regions-uk.xls')
+import os.path
 
 
 def process_gva_sheet(s):
@@ -27,9 +27,9 @@ def process_snowflakes(s):
         if str(s.cell(row,0).value)[:3] == "UKI":
             for n, v in enumerate(years):
                 r = []
-                r.append(s.cell(row,0).value)
-                r.append(v)
-                r.append(s.cell(row,1).value)
+                r.append(s.cell(row,0).value) #code
+                r.append(v) #date
+                r.append(s.cell(row,1).value) #place
                 if s.cell(row,n+2).value == '':
                     continue
                 else:
@@ -46,7 +46,8 @@ def collector(insert, d=None):
             if key in d.keys():
                 d[key].append(i[-1])
             else:
-                d[key] = [i[-1]]
+                assert len(i) == 4
+                d[key] = i
     return d
 
 def process_workbook(wb):
@@ -64,4 +65,13 @@ def process_workbook(wb):
     table['headers'] = headers
     return table
 
-print(process_workbook(wb))
+def gva_gdhi_to_pg(conn, data_dir):
+        wb = open_workbook(os.path.join(data_dir, 'london_datastore/GVA-GDHI-nuts3-regions-uk.xls'))
+        table = process_workbook(wb)
+        curs = conn.cursor()
+        for k, v in table.items():
+            #gross hack for data we don't like
+            if len(v) != 8:
+                continue
+            else:
+                curs.execute("INSERT INTO london_gva_gdhi VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", v)

@@ -2,6 +2,7 @@
 from dbmake import DBMake
 from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
+from gva_gdhi import gva_gdhi_to_pg
 import os.path
 
 db = DBMake()
@@ -28,6 +29,19 @@ db.table('uk_postcodes',
         SELECT AddGeometryColumn ('public','uk_postcodes','geom',4326,'POINT',2);
     """,
     fill=fill_postcodes_table)
+
+db.table('london_gva_ghdi',
+    create="""CREATE TABLE IF NOT EXISTS london_gva (
+        UKI VARCHAR,
+        Year INT,
+        AreaName VARCHAR,
+        GVA INT,
+        GVAPerHead INT,
+        PerHeadIndices INT,
+        GrossDisposableHouse INT,
+        GDHIPerHead INT)
+    """,
+    fill=gva_gdhi_to_pg)
 
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
