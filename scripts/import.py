@@ -30,8 +30,8 @@ db.table('uk_postcodes',
     """,
     fill=fill_postcodes_table)
 
-db.table('london_gva_ghdi',
-    create="""CREATE TABLE IF NOT EXISTS london_gva (
+db.table('london_gva_gdhi',
+    create="""CREATE TABLE IF NOT EXISTS london_gva_gdhi (
         UKI VARCHAR,
         Year INT,
         AreaName VARCHAR,

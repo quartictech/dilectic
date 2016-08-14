@@ -69,6 +69,7 @@ def gva_gdhi_to_pg(conn, data_dir):
         wb = open_workbook(os.path.join(data_dir, 'london_datastore/GVA-GDHI-nuts3-regions-uk.xls'))
         table = process_workbook(wb)
         curs = conn.cursor()
+        table.pop('headers')
         for k, v in table.items():
             #gross hack for data we don't like
             if len(v) != 8:
