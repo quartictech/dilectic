@@ -18,6 +18,22 @@ def process_gva_sheet(s):
                 insert.append(r)
     return insert
 
+def process_snowflakes(s):
+    years = [int(v.value) for v in s.row(2)[2:]]
+    if years[-1] == 20143:
+        years[-1] = 2014
+    insert = []
+    for row in range(s.nrows):
+        if str(s.cell(row,0).value)[:3] == "UKI":
+            for n, v in enumerate(years):
+                r = []
+                r.append(s.cell(row,0).value)
+                r.append(v)
+                r.append(s.cell(row,1).value)
+                r.append(str(s.cell(row,n+2).value))
+                insert.append(r)
+    return insert
+
 def collector(insert, d=None):
     if d is None:
         d = {}
@@ -39,7 +55,10 @@ def process_workbook(wb):
         if s.name in of_interest:
             headers.append(s.name)
             table = collector(process_gva_sheet(s), table)
+        if s.name in special_snowflakes:
+            headers.append(s.name)
+            print(process_snowflakes(s))
     table['headers'] = headers
     return table
 
-print(process_workbook(wb))
+process_workbook(wb)
