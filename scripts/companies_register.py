@@ -1,18 +1,10 @@
 import glob
 import csv
 import sys
-from datetime import datetime
 import zipfile
 import codecs
 import os.path
-
-def parse_date(s):
-    if not s:
-        return None
-    try:
-        return datetime.strptime(s, '%d/%m/%Y')
-    except:
-        raise ValueError("Can't parse " + s)
+import utils
 
 def process_companies_csv(conn, f):
     rdr = csv.reader(f)
@@ -20,8 +12,8 @@ def process_companies_csv(conn, f):
     count = 0
     curs = conn.cursor()
     for line in rdr:
-        dissolution_date = parse_date(line[13])
-        incorporation_date = parse_date(line[14])
+        dissolution_date = utils.parse_date(line[13])
+        incorporation_date = utils.parse_date(line[14])
 
         sql = "INSERT INTO companies VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         values = (line[0], line[1], line[10], line[11], line[12],

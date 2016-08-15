@@ -3,6 +3,7 @@ from dbmake import DBMake
 from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
 from gva_gdhi import gva_gdhi_to_pg
+from london_price_houses import fill_london_house_prices
 import os.path
 
 db = DBMake()
@@ -42,6 +43,33 @@ db.table('london_gva_gdhi',
         GDHIPerHead INT)
     """,
     fill=gva_gdhi_to_pg)
+
+db.table('london_price_houses',
+    create="""CREATE TABLE IF NOT EXISTS london_price_houses (
+        Price INT,
+        DateProcessed DATE,
+        Postcode VARCHAR,
+        PropertyType VARCHAR,
+        WhetherNew VARCHAR,
+        Tenure VARCHAR,
+        Addr1 VARCHAR,
+        Addr2 VARCHAR,
+        Addr3 VARCHAR,
+        Addr4 VARCHAR,
+        Town VARCHAR,
+        LocalAuthority VARCHAR,
+        County VARCHAR,
+        RecordStatus VARCHAR,
+        PostcodeClean VARCHAR,
+        InnerOuter VARCHAR,
+        BoroughCode VARCHAR,
+        WardCode VARCHAR,
+        WardName VARCHAR,
+        MSOA11 VARCHAR,
+        LSOA11 VARCHAR,
+        OA11 VARCHAR)
+    """,
+    fill=fill_london_house_prices)
 
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
