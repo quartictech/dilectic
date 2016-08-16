@@ -59,15 +59,7 @@ db.table('london_price_houses',
         Town VARCHAR,
         LocalAuthority VARCHAR,
         County VARCHAR,
-        RecordStatus VARCHAR,
-        PostcodeClean VARCHAR,
-        InnerOuter VARCHAR,
-        BoroughCode VARCHAR,
-        WardCode VARCHAR,
-        WardName VARCHAR,
-        MSOA11 VARCHAR,
-        LSOA11 VARCHAR,
-        OA11 VARCHAR)
+        RecordStatus VARCHAR)
     """,
     fill=fill_london_house_prices)
 

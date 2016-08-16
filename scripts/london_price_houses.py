@@ -24,13 +24,10 @@ def process_prices_zip(conn, path):
             curs = conn.cursor()
             next(rdr)
             for row in rdr:
-                continue
-                print(row)
 
                 sql = """INSERT INTO london_price_houses VALUES(%s, %s, %s, %s, %s,
                                                                 %s, %s, %s, %s, %s,
-                                                                %s, %s, %s, %s, %s,
-                                                                %s
+                                                                %s, %s, %s, %s
                                                                 )"""
                 if len(row) == 29:
                     try:
