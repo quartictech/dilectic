@@ -4,6 +4,7 @@ from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
 from gva_gdhi import gva_gdhi_to_pg
 from london_price_houses import fill_london_house_prices
+from mcdonalds import fill_mcdonalds_table
 import os.path
 
 db = DBMake()
@@ -62,6 +63,17 @@ db.table('london_price_houses',
         RecordStatus VARCHAR)
     """,
     fill=fill_london_house_prices)
+
+db.table('mcdonalds',
+    create="""CREATE TABLE IF NOT EXISTS mcdonalds (
+        Name VARCHAR,
+        Street VARCHAR,
+        Town VARCHAR,
+        PostCode VARCHAR,
+        PhoneNumber VARCHAR
+    );
+    SELECT AddGeometryColumn ('public', 'mcdonalds', 'geom', 4326, 'POINT', 2);""",
+    fill=fill_mcdonalds_table)
 
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 
