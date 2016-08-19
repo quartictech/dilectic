@@ -5,4 +5,5 @@ config.yml
 env
 postgres/
 *.pyc
+twitter.conf
 .DS_Store

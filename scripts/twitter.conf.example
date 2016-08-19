@@ -1,0 +1,6 @@
+#Copy this, fill out values, remove this line rename to 'twitter.conf'
+[DEFAULT]
+AppKey = 'your app key'
+AppSecret = 'your app secret'
+UserOauthToken = 'user oauth token'
+UserOauthTokenSecret = 'user oauth token secret'
