@@ -18,13 +18,13 @@ def process_prices_zip(conn, path):
     path = fix_zip_file(path)
     with ZipFile(path) as z:
         for f in z.namelist():
+            print('Processing {}'.format(f))
             f = codecs.iterdecode(z.open(f), 'utf-8', errors='ignore')
             rdr = csv.reader(f)
             count = 0
             curs = conn.cursor()
             next(rdr)
             for row in rdr:
-
                 sql = """INSERT INTO london_price_houses VALUES(%s, %s, %s, %s, %s,
                                                                 %s, %s, %s, %s, %s,
                                                                 %s, %s, %s, %s
@@ -76,12 +76,11 @@ def process_prices_zip(conn, path):
                     except Exception as e:
                         print(e)
 
-
-                    curs.execute(sql, values)
-                    count += 1
-                    if count % 10000 == 0:
-                        print(count)
-                        conn.commit()
+                curs.execute(sql, values)
+                count += 1
+                if count % 10000 == 0:
+                    print(count)
+                    conn.commit()
 
 def fill_london_house_prices(conn, data_dir):
     data = 'london_datastore/London-price-paid-house-price-data-since-1995-CSV.zip'
