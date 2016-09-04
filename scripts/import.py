@@ -5,6 +5,7 @@ from uk_postcodes import fill_postcodes_table
 from gva_gdhi import gva_gdhi_to_pg
 from london_price_houses import fill_london_house_prices
 from mcdonalds import fill_mcdonalds_table
+from gla_land_and_assets import fill_land_and_assets_table
 import os.path
 
 db = DBMake()
@@ -44,6 +45,28 @@ db.table('london_gva_gdhi',
         GDHIPerHead INT)
     """,
     fill=gva_gdhi_to_pg)
+
+db.table('public_land_assets',
+    create="""CREATE TABLE IF NOT EXISTS public_land_assets (
+        Owner VARCHAR,
+        Borough VARCHAR,
+        UniqueAssetId VARCHAR,
+        HoldingName VARCHAR,
+        Address VARCHAR,
+        PostCode VARCHAR,
+        SubUnit VARCHAR,
+        UPRN VARCHAR,
+        Description VARCHAR,
+        Occupied VARCHAR,
+        LandBuilding VARCHAR,
+        AssetCategory VARCHAR,
+        Tenure VARCHAR,
+        SiteAreaHectares REAL,
+        BuildingAreaGIASqm REAL,
+        BuildingAreaNIAsqm REAL,
+        Eastling INT,
+        Northing INT)""",
+        fill=fill_land_and_assets_table)
 
 db.table('london_price_houses',
     create="""CREATE TABLE IF NOT EXISTS london_price_houses (
