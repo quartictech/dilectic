@@ -1,6 +1,7 @@
 import requests
 from requests_oauthlib import OAuth1
 import json
+import pprint
 import configparser
 import os
 import sys
@@ -29,7 +30,6 @@ def setup_stream():
 
 def get_tweets(outfile=None):
     r = setup_stream()
-    count = 0
     meter = Metrology.meter('tweets')
     if outfile:
         with open(outfile, 'a') as f:
@@ -41,8 +41,6 @@ def get_tweets(outfile=None):
                     decoded = line.decode('utf-8')
                     f.write(decoded + "\n")
                     meter.mark()
-                    #print(json.loads(decoded))
-                    # tweet = json.loads(line.decode('utf-8'))
                   except Exception as e:
                     print(e)
                     print(line)
@@ -50,14 +48,10 @@ def get_tweets(outfile=None):
                   sys.exit()
     else:
         for line in r.iter_lines():
-            if meter.count % 10 == 0:
-                print("Wrote", meter.count, "tweets. Rate=", meter.one_minute_rate * 60 * 60 * 24,"/day")
-            if os.path.getsize(outfile)/10**9 < 500:
-              try:
+            try:
                 decoded = line.decode('utf-8')
-                f.write(decoded + "\n")
-                print(json.loads(decoded))
-              except Exception as e:
+                pprint.pprint(json.loads(decoded))
+            except Exception as e:
                 print(e)
                 print(line)
 
