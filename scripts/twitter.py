@@ -28,26 +28,23 @@ def setup_stream():
 
     return r
 
-def get_tweets(outfile=None):
-    r = setup_stream()
-    meter = Metrology.meter('tweets')
-    if outfile:
-        with open(outfile, 'a') as f:
-            for line in r.iter_lines():
-                if meter.count % 10 == 0:
-                    print("Wrote", meter.count, "tweets. Rate=", meter.one_minute_rate * 60 * 60 * 24,"/day")
-                if os.path.getsize(outfile)/10**9 < 500:
-                  try:
+def read_stream(request, outfile=None):
+    for line in request.iter_lines():
+        if outfile:
+            meter = Metrology.meter('tweets')
+            if meter.count % 10 == 0:
+                print("Wrote", meter.count, "tweets. Rate=", meter.one_minute_rate * 60 * 60 * 24,"/day")
+            if os.path.getsize(outfile)/10**9 < 500:
+                try:
                     decoded = line.decode('utf-8')
                     f.write(decoded + "\n")
                     meter.mark()
-                  except Exception as e:
+                except Exception as e:
                     print(e)
                     print(line)
-                else:
-                  sys.exit()
-    else:
-        for line in r.iter_lines():
+            else:
+                sys.exit()
+        else:
             try:
                 decoded = line.decode('utf-8')
                 pprint.pprint(json.loads(decoded))
@@ -55,6 +52,9 @@ def get_tweets(outfile=None):
                 print(e)
                 print(line)
 
+def get_tweets(outfile=None):
+    r = setup_stream()
+    read_stream(r, outfile)
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
