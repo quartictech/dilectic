@@ -1,6 +1,10 @@
 #Copy this, fill out values, remove this line rename to 'twitter.conf'
-[DEFAULT]
+[api]
 AppKey = 'your app key'
 AppSecret = 'your app secret'
 UserOauthToken = 'user oauth token'
 UserOauthTokenSecret = 'user oauth token secret'
+
+[query]
+locations=-0.6,51.25,0.45,51.75
+track=tube london
