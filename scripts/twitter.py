@@ -9,7 +9,6 @@ import argparse
 from metrology import Metrology
 
 def setup_stream():
-
     config = configparser.ConfigParser()
     config.read('twitter.conf')
 
