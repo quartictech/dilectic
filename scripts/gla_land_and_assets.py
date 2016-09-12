@@ -15,19 +15,13 @@ def process_csv(conn, f):
                 if element.strip() == '':
                     line[index] = None
 
-            sql = """INSERT INTO public_land_assets
-            VALUES(%s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s, %s, %s,
-            %s, %s, %s)"""
             line.insert(0, owner)
-            curs.execute(sql, line)
-            conn.commit()
+            yield line
 
-def fill_land_and_assets_table(conn, data_dir):
+def fill_land_and_assets_table(data_dir):
     path = os.path.join(data_dir, 'london_datastore/gla_land_assets/*.csv')
     for f in glob.glob(path):
-        process_csv(conn, f)
+        yield from process_csv(f)
 
 if __name__ == "__main__":
     fill_land_and_assets_table(None, data_dir)

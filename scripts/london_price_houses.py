@@ -14,7 +14,7 @@ def fix_zip_file(path):
     return path
 
 
-def process_prices_zip(conn, path):
+def process_prices_zip(path):
     path = fix_zip_file(path)
     with ZipFile(path) as z:
         for f in z.namelist():
@@ -22,13 +22,8 @@ def process_prices_zip(conn, path):
             f = codecs.iterdecode(z.open(f), 'utf-8', errors='ignore')
             rdr = csv.reader(f)
             count = 0
-            curs = conn.cursor()
             next(rdr)
             for row in rdr:
-                sql = """INSERT INTO london_price_houses VALUES(%s, %s, %s, %s, %s,
-                                                                %s, %s, %s, %s, %s,
-                                                                %s, %s, %s, %s
-                                                                )"""
                 if len(row) == 29:
                     try:
                         #format 1:
@@ -76,13 +71,9 @@ def process_prices_zip(conn, path):
                     except Exception as e:
                         print(e)
 
-                curs.execute(sql, values)
-                count += 1
-                if count % 10000 == 0:
-                    print(count)
-                    conn.commit()
+                yield values
 
-def fill_london_house_prices(conn, data_dir):
+def fill_london_house_prices(data_dir):
     data = 'london_datastore/London-price-paid-house-price-data-since-1995-CSV.zip'
     path = os.path.join(data_dir, data)
-    process_prices_zip(conn, path)
+    yield from process_prices_zip(path)

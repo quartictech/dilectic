@@ -65,14 +65,13 @@ def process_workbook(wb):
     table['headers'] = headers
     return table
 
-def gva_gdhi_to_pg(conn, data_dir):
+def gva_gdhi_to_pg(data_dir):
         wb = open_workbook(os.path.join(data_dir, 'london_datastore/GVA-GDHI-nuts3-regions-uk.xls'))
         table = process_workbook(wb)
-        curs = conn.cursor()
         table.pop('headers')
         for k, v in table.items():
             #gross hack for data we don't like
             if len(v) != 8:
                 continue
             else:
-                curs.execute("INSERT INTO london_gva_gdhi VALUES(%s, %s, %s, %s, %s, %s, %s, %s)", v)
+                yield v

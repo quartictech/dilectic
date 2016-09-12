@@ -3,6 +3,8 @@ import argparse
 import subprocess
 import os
 import yaml
+import tempfile
+import csv
 
 class DBMake(object):
     def __init__(self):
@@ -27,13 +29,26 @@ class DBMake(object):
     def index(self, name, create=None):
         return self._create('index', name, create, None, None)
 
-    def table(self, name, create=None, sql_file=None, fill=None):
+    def table(self, name, create=None, sql_file=None, fill=None, **kwargs):
         return self._create('table', name, create, sql_file, fill)
 
     def materialized_view(self, name, create=None):
         return self._create('materialized view', name, create, None, None)
 
-    def _create(self, type, name, create, sql_file, fill):
+    def _run_fill(self, name, conn, fill, **kwargs):
+        with tempfile.NamedTemporaryFile(mode='w+') as tmp_file:
+            writer = csv.writer(tmp_file, delimiter='\t')
+            count = 0
+            for row in fill(self.data_dir):
+                if count % 10000 == 0:
+                    print(count)
+                writer.writerow(row)
+                count += 1
+            tmp_file.seek(0)
+            with conn.cursor() as curs:
+                curs.copy_from(tmp_file, name, null='')
+
+    def _create(self, type, name, create, sql_file, fill, **kwargs):
         if create is None and sql_file is None:
             raise ValueError("create or sql_file must be set")
 
@@ -60,7 +75,7 @@ class DBMake(object):
                     subprocess.call(command, shell=True, env=env)
                 print("Creating:", name)
                 if fill is not None:
-                    fill(conn, self.data_dir)
+                    self._run_fill(name, conn, fill, **kwargs)
             else:
                 print("Skipping:", name)
             conn.commit()
