@@ -4,6 +4,7 @@ import csv
 import codecs
 import utils
 import subprocess
+import re
 
 def fix_zip_file(path):
     #zip file they provide is fucked so we fix it.
@@ -45,7 +46,7 @@ def process_prices_zip(path):
                         #'E01000273', 'E00001314']
                         fmt = '%d/%m/%Y %H:%M'
                         values = (
-                        row[2], utils.parse_date(row[3], fmt), row[8], row[9], row[10],
+                        row[2], utils.parse_date(row[3], fmt), re.sub('\\s+', ' ', row[8]), row[9], row[10],
                         row[11], row[12], row[13], row[14], row[15],
                         row[16], row[17], row[18], row[19])
                     except UnicodeDecodeError as e:
@@ -65,7 +66,7 @@ def process_prices_zip(path):
                         #'E05000085', 'E05000085', 'E09000005', 'Brent']
                         fmt = '%d-%b-%y'
                         values = (
-                        row[1], utils.parse_date(row[2], fmt), row[3], row[5], row[6],
+                        row[1], utils.parse_date(row[2], fmt), re.sub('\\s+', ' ', row[3]), row[5], row[6],
                         row[7], "", "", row[8], row[9],#addr is 2 lines shorter - insert blank
                         row[10], row[11], row[12], row[13])
                     except Exception as e:
