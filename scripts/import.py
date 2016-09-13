@@ -8,22 +8,24 @@ from mcdonalds import fill_mcdonalds_table
 from gla_land_and_assets import fill_land_and_assets_table
 import os.path
 
+from import dbmake.schema as schema
+
 db = DBMake()
 db.table('companies',
-    create="""CREATE TABLE IF NOT EXISTS companies (
-        CompanyName VARCHAR,
-        CompanyNumber VARCHAR UNIQUE,
-        CompanyCategory VARCHAR,
-        CompanyStatus VARCHAR,
-        CountryOfOrigin VARCHAR,
-	    DissolutionDate DATE,
-        IncorporationDate DATE,
-        SICText1 VARCHAR,
-        SICText2 VARCHAR,
-        SICText3 VARCHAR,
-        Postcode VARCHAR)
-    """,
-    fill=fill_companies_table)
+    schema={
+        "CompanyName": schema.VarChar(),
+        "CompanyNumber": schema.VarChar(unique=True),
+        "CompanyCategory": schema.VarChar(),
+        "CompanyStatus": schema.VarChar(),
+        "CountryOfOrigin": schema.VarChar(),
+	    "DissolutionDate": schema.Date(),
+        "IncorporationDate": schema.Date(),
+        "SICText1": schema.VarChar(),
+        "SICText2": schema.VarChar(),
+        "SICText3" schema.VarChar(),
+        "Postcode" schema.VarChar()
+        },
+        fill=fill_companies_table)
 
 db.table('uk_postcodes',
     create="""CREATE TABLE IF NOT EXISTS uk_postcodes (
@@ -153,9 +155,17 @@ db.materialized_view('companies_geocoded',
             companies c
         LEFT JOIN uk_postcodes p ON p.postcode = c.postcode """)
 
-db.index('companies_geocoded_index', create="CREATE INDEX companies_geocoded_index ON companies_geocoded USING GIST(geom)")
-db.index('lsoa_2001_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2001_ew_bfe_v2_clean_index ON lsoa_2001_ew_bfe_v2_clean USING GIST(geom)")
-db.index('lsoa_2011_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2011_ew_bfe_v2_clean_index ON lsoa_2011_ew_bfe_v2_clean USING GIST(geom)")
+
+db.table('mcdonalds_geocoded',
+    create = """ CREATE TABLE mcdonalds_geocoded AS
+        SELECT
+            c.*,
+            ST_Transform(p.geom, 900913) as geom
+        FROM
+            companies c
+        LEFT JOIN uk_postcodes p ON p.postcode = c.postcode """)
+
+
 
 config_file = os.path.join(os.path.dirname(__file__), '../config.yml')
 db.run(config=config_file)
