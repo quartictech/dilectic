@@ -8,9 +8,32 @@ from mcdonalds import fill_mcdonalds_table
 from gla_land_and_assets import fill_land_and_assets_table
 from borough_profiles import fill_borough_profiles
 from osm import fill_amenities
+from tube import fill_tube
 import os.path
 
 db = DBMake()
+
+db.table('_tube',
+    create="""CREATE TABLE IF NOT EXISTS _tube (
+        id VARCHAR,
+        name VARCHAR,
+        color VARCHAR,
+        geojson VARCHAR
+        )
+    """,
+    fill=fill_tube)
+
+db.materialized_view('tube',
+    create = """ CREATE MATERIALIZED VIEW tube AS
+        SELECT
+            t.id,
+            t.name,
+            t.color as "_color",
+            ST_SetSRID(ST_GeomFromGeoJson(t.geojson), 4326) as geom
+        FROM
+            _tube t
+            """)
+
 db.table('_amenities',
     create="""CREATE TABLE IF NOT EXISTS _amenities (
         osmid BIGINT,
@@ -54,21 +77,21 @@ db.table('london_borough_profiles',
     """ CREATE TABLE IF NOT EXISTS london_borough_profiles (
         Code VARCHAR,
         AreaName VARCHAR,
-        InnerOuterLondon VARCHAR,
-        GLAPopulationEstimate2015 DOUBLE PRECISION,
-        GLAHouseholdEstimate2015 DOUBLE PRECISION,
-        InlandAreaHectares DOUBLE PRECISION,
-        PopulationDensityPerHectare2015 DOUBLE PRECISION,
-        AverageAge2015 DOUBLE PRECISION,
-        ProportionOfPopulationAged0_15_2015 DOUBLE PRECISION,
-        ProportionOfPopulationOfWorkingAge2015 DOUBLE PRECISION,
-        ProportionOfPopulationAged65AndOver2015 DOUBLE PRECISION,
-        NetInternalMigration2014 DOUBLE PRECISION,
-        NetInternationalMigration2014 DOUBLE PRECISION,
-        NetNaturalChange2014 DOUBLE PRECISION,
-        PercentageOfResidentPopulationBornAbroad2014 DOUBLE PRECISION,
-        LargestMigrantPopulationByCountryOfBirth2011 VARCHAR,
-        PercentageOfLargestMigrantPopulation2011 DOUBLE PRECISION,
+        "Inner Outer London" VARCHAR,
+        "GLA Population Estimate (2015)" DOUBLE PRECISION,
+        "GLA Household Estimate (2015)" DOUBLE PRECISION,
+        "Inland Area Hectares" DOUBLE PRECISION,
+        "Population Density Per Hectare 2015" DOUBLE PRECISION,
+        "Average Age 2015" DOUBLE PRECISION,
+        "Proportion Of Population Aged 0 to 15 (2015)" DOUBLE PRECISION,
+        "Proportion Of Population Of Working Age (2015)" DOUBLE PRECISION,
+        "Proportion Of Population Aged 65 And Over (2015)" DOUBLE PRECISION,
+        "Net Internal Migration (2014)" DOUBLE PRECISION,
+        "Net International Migration (2014)" DOUBLE PRECISION,
+        "Net Natural Change (2014)" DOUBLE PRECISION,
+        "Percentage Of Resident Population Born Abroad (2014)" DOUBLE PRECISION,
+        "Largest Migrant Population By Country Of Birth (2011)" VARCHAR,
+        "Percentage Of Largest Migrant Population (2011)" DOUBLE PRECISION,
 --        Second largest migrant population by country of birth (2011),
 --        % of second largest migrant population (2011),
 --        Third largest migrant population by country of birth (2011),
@@ -126,7 +149,7 @@ db.table('london_borough_profiles',
 --        Teenage conception rate (2013),
 --        Life satisfaction score 2011-14 (out of 10),
 --        Worthwhileness score 2011-14 (out of 10),
-        HappinessScore2011_14_OutOf10 DOUBLE PRECISION,
+         "Happiness Score (2011-14) Out Of 10" DOUBLE PRECISION,
 --        Anxiety score 2011-14 (out of 10),
 --        Childhood Obesity Prevalance (%) 2013/14,
 --        People aged 17+ with diabetes (%),
@@ -135,13 +158,13 @@ db.table('london_borough_profiles',
 --        Proportion of seats won by Conservatives in 2014 election,
 --        Proportion of seats won by Labour in 2014 election,
 --        Proportion of seats won by Lib Dems in 2014 election,
-        TurnoutAt2014LocalElections DOUBLE PRECISION)""",
+        "Turnout At 2014 Local Elections" DOUBLE PRECISION)""",
         fill=fill_borough_profiles)
 
 
 db.table('_uk_postcodes',
     create="""CREATE TABLE IF NOT EXISTS _uk_postcodes (
-  	postcode VARCHAR,	
+  	postcode VARCHAR,
         latitude DOUBLE PRECISION,
 	longitude DOUBLE PRECISION);
     """,
