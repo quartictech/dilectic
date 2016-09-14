@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from dbmake import DBMake
 from companies_register import fill_companies_table
 from uk_postcodes import fill_postcodes_table
@@ -11,8 +11,8 @@ from osm import fill_amenities
 import os.path
 
 db = DBMake()
-db.table('amenities',
-    create="""CREATE TABLE IF NOT EXISTS amenities (
+db.table('_amenities',
+    create="""CREATE TABLE IF NOT EXISTS _amenities (
         osmid BIGINT,
         Type VARCHAR,
         Name VARCHAR,
@@ -22,6 +22,16 @@ db.table('amenities',
         )
     """,
     fill=fill_amenities)
+
+db.materialized_view('amenities',
+    create = """ CREATE MATERIALIZED VIEW amenities AS
+        SELECT
+            a.*,
+            ST_SetSRID(ST_MakePoint(a.Longitude, a.Latitude), 4326) as geom
+        FROM
+            _amenities a
+            """)
+
 
 
 db.table('companies',
@@ -129,13 +139,23 @@ db.table('london_borough_profiles',
         fill=fill_borough_profiles)
 
 
-db.table('uk_postcodes',
-    create="""CREATE TABLE IF NOT EXISTS uk_postcodes (
-        id SERIAL,
-        postcode VARCHAR);
-        SELECT AddGeometryColumn ('public','uk_postcodes','geom',4326,'POINT',2);
+db.table('_uk_postcodes',
+    create="""CREATE TABLE IF NOT EXISTS _uk_postcodes (
+  	postcode VARCHAR,	
+        latitude DOUBLE PRECISION,
+	longitude DOUBLE PRECISION);
     """,
     fill=fill_postcodes_table)
+
+db.materialized_view('uk_postcodes',
+    create = """ CREATE MATERIALIZED VIEW uk_postcodes AS
+        SELECT
+            p.*,
+            ST_SetSRID(ST_MakePoint(p.longitude, p.latitude), 4326) as geom
+        FROM
+            _uk_postcodes p
+            """)
+
 
 db.table('london_gva_gdhi',
     create="""CREATE TABLE IF NOT EXISTS london_gva_gdhi (
