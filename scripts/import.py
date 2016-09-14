@@ -7,9 +7,23 @@ from london_price_houses import fill_london_house_prices
 from mcdonalds import fill_mcdonalds_table
 from gla_land_and_assets import fill_land_and_assets_table
 from borough_profiles import fill_borough_profiles
+from osm import fill_amenities
 import os.path
 
 db = DBMake()
+db.table('amenities',
+    create="""CREATE TABLE IF NOT EXISTS amenities (
+        osmid BIGINT,
+        Type VARCHAR,
+        Name VARCHAR,
+        Latitude DOUBLE PRECISION,
+        Longitude DOUBLE PRECISION,
+        OpeningHours VARCHAR
+        )
+    """,
+    fill=fill_amenities)
+
+
 db.table('companies',
     create="""CREATE TABLE IF NOT EXISTS companies (
         CompanyName VARCHAR,
