@@ -231,6 +231,24 @@ db.table('mcdonalds',
     )""",
     fill=fill_mcdonalds_table)
 
+db.table('naptan',
+    create="""CREATE TABLE IF NOT EXISTS naptan (
+        StopAreaCode VARCHAR,
+        Name VARCHAR,
+        NameLang VARCHAR,
+        AdministrativeAreaCode VARCHAR,
+        StopAreaType VARCHAR,
+        GridType VARCHAR,
+        Easting INT,
+        Northing INT,
+        CreationDateTime DATE,
+        ModificationDateTime DATE,
+        RevisionNumber INT,
+        Modification VARCHAR,
+        Status VARCHAR
+    )""",
+    fill=fill_naptan)
+
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 db.table('lsoa_2001_ew_bfe_v2', sql_file='lsoa/data/lsoa_2001_ew_bfe_v2.sql')
 db.table('lsoa_2011_ew_bfe_v2', sql_file='lsoa/data/lsoa_2011_ew_bfe_v2.sql')
