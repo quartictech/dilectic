@@ -6,4 +6,5 @@ env
 postgres/
 *.pyc
 twitter.conf
+tfl.conf
 .DS_Store
