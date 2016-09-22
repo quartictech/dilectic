@@ -7,4 +7,5 @@ postgres/
 *.pyc
 twitter.conf
 tfl.conf
+*.zip
 .DS_Store
