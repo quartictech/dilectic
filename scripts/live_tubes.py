@@ -20,8 +20,16 @@ lines_data = s.get(api_root + '/Line/' + ','.join(lines), params = {'app_id' : a
 
 resp = s.get(api_root + '/Line/' + ','.join(lines) + '/Arrivals')
 arrivals = resp.json()
+destination_loc_ids = []
+current_loc_ids = []
+loc_train = {}#for every station, which train
 for a in arrivals:
     if 'destinationNaptanId' in a.keys():
-        print('destination {}'.format(a['destinationNaptanId']))
-    if 'NaptanId' in a.keys():
-        print(a['NaptanId'])
+        destination = a['destinationNaptanId']
+        destination_loc_ids.append(destination)
+    if 'naptanId' in a.keys():
+        current_loc = a['naptanId']
+        current_loc_ids.append(current_loc)
+        pprint.pprint(a)
+        loc_train[current_loc] = a['vehicleId']
+print(loc_train)
