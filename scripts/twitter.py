@@ -31,20 +31,23 @@ def read_stream(request, outfile=None):
     if outfile:
         with open(outfile, 'a') as f:
             while True:#to avoid the stream hanging up
-                for line in request.iter_lines():
-                    meter = Metrology.meter('tweets')
-                    if meter.count % 10 == 0:
-                        print("Wrote", meter.count, "tweets. Rate=", meter.one_minute_rate * 60 * 60 * 24,"/day")
-                    if os.path.getsize(outfile)/10**9 < 500:
-                        try:
-                            decoded = line.decode('utf-8')
-                            f.write(decoded + "\n")
-                            meter.mark()
-                        except Exception as e:
-                            print(e)
-                            print(line)
-                    else:
-                        sys.exit()
+                try:
+                    for line in request.iter_lines():
+                        meter = Metrology.meter('tweets')
+                        if meter.count % 10 == 0:
+                            print("Wrote", meter.count, "tweets. Rate=", meter.one_minute_rate * 60 * 60 * 24,"/day")
+                        if os.path.getsize(outfile)/10**9 < 500:
+                            try:
+                                decoded = line.decode('utf-8')
+                                f.write(decoded + "\n")
+                                meter.mark()
+                            except Exception as e:
+                                print(e)
+                                print(line)
+                        else:
+                            sys.exit()
+                except requests.exceptions.StreamConsumedError as e:
+                    print(e)
     else:
         try:
             decoded = line.decode('utf-8')
