@@ -7,7 +7,6 @@ from london_price_houses import fill_london_house_prices
 from mcdonalds import fill_mcdonalds_table
 from gla_land_and_assets import fill_land_and_assets_table
 from borough_profiles import fill_borough_profiles
-from osm import fill_amenities
 from tube import fill_tube
 import os.path
 
@@ -33,29 +32,6 @@ db.materialized_view('tube',
         FROM
             _tube t
             """)
-
-db.table('_amenities',
-    create="""CREATE TABLE IF NOT EXISTS _amenities (
-        osmid BIGINT,
-        Type VARCHAR,
-        Name VARCHAR,
-        Latitude DOUBLE PRECISION,
-        Longitude DOUBLE PRECISION,
-        OpeningHours VARCHAR
-        )
-    """,
-    fill=fill_amenities)
-
-db.materialized_view('amenities',
-    create = """ CREATE MATERIALIZED VIEW amenities AS
-        SELECT
-            a.*,
-            ST_SetSRID(ST_MakePoint(a.Longitude, a.Latitude), 4326) as geom
-        FROM
-            _amenities a
-            """)
-
-
 
 db.table('companies',
     create="""CREATE TABLE IF NOT EXISTS companies (
