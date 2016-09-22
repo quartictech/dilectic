@@ -8,6 +8,7 @@ from mcdonalds import fill_mcdonalds_table
 from gla_land_and_assets import fill_land_and_assets_table
 from borough_profiles import fill_borough_profiles
 from tube import fill_tube
+from naptan import fill_naptan
 import os.path
 
 db = DBMake()
