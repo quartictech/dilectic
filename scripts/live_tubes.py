@@ -50,8 +50,9 @@ def update_locs(loc_train):
 
 def make_feature_collection(stations):
     features = []
+    t = calendar.timegm(time.gmtime())
     for i, pos in stations:
-        features.append(geojson.Feature(id=i, geometry=pos))
+        features.append(geojson.Feature(id=i, geometry=pos, properties={'timestamp':t}))
     collection = geojson.FeatureCollection(features)
     return collection
 
