@@ -1,4 +1,5 @@
 import requests
+import time
 import configparser
 import pprint
 
@@ -16,20 +17,22 @@ lines = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city',
             'metropolitan', 'jubilee', 'northern', 'piccadilly', 'victoria',
             'waterloo-city']
 lines_data = s.get(api_root + '/Line/' + ','.join(lines), params = {'app_id' : app_id, 'app_key' : app_key})
-# pprint.pprint(lines_data.json())
 
-resp = s.get(api_root + '/Line/' + ','.join(lines) + '/Arrivals')
-arrivals = resp.json()
-destination_loc_ids = []
-current_loc_ids = []
+def update_locs(loc_train):
+    resp = s.get(api_root + '/Line/' + ','.join(lines) + '/Arrivals')
+    arrivals = resp.json()
+    for a in arrivals:
+        if 'naptanId' in a.keys():
+            current_loc = a['naptanId']
+            loc_train[current_loc] = a['vehicleId']
+    return loc_train
+
 loc_train = {}#for every station, which train
-for a in arrivals:
-    if 'destinationNaptanId' in a.keys():
-        destination = a['destinationNaptanId']
-        destination_loc_ids.append(destination)
-    if 'naptanId' in a.keys():
-        current_loc = a['naptanId']
-        current_loc_ids.append(current_loc)
-        pprint.pprint(a)
-        loc_train[current_loc] = a['vehicleId']
-print(loc_train)
+new_loc_train = {}
+while True:
+    new_loc_train = update_locs(new_loc_train)
+    for k, v in new_loc_train.items():
+        if k in loc_train.keys() and v != loc_train[k]:
+            print(new_loc_train[k])
+    loc_train = new_loc_train.copy()
+    time.sleep(9)
