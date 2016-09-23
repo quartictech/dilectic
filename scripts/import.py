@@ -9,6 +9,7 @@ from gla_land_and_assets import fill_land_and_assets_table
 from borough_profiles import fill_borough_profiles
 from tube import fill_tube
 from naptan import fill_naptan
+from crime import fill_crime_table
 import os.path
 
 db = DBMake()
@@ -250,6 +251,23 @@ db.table('naptan',
     )""",
     fill=fill_naptan)
 
+db.table('crime',
+create="""CREATE TABLE IF NOT EXISTS crime (
+    CrimeId VARCHAR,
+    MonthYear DATE,
+    ReportedBy VARCHAR,
+    FallsWithin VARCHAR,
+    Longitude DOUBLE PRECISION,
+    Latitude DOUBLE PRECISION,
+    Location VARCHAR,
+    LsoaCode VARCHAR,
+    LsoaName VARCHAR,
+    CrimeType VARCHAR,
+    LastOutcomeCat VARCHAR,
+    Context VARCHAR
+)""",
+fill=fill_crime_table)
+
 db.table('postcode_districts', sql_file='../data/postcode_districts.sql')
 db.table('lsoa_2001_ew_bfe_v2', sql_file='lsoa/data/lsoa_2001_ew_bfe_v2.sql')
 db.table('lsoa_2011_ew_bfe_v2', sql_file='lsoa/data/lsoa_2011_ew_bfe_v2.sql')
@@ -323,6 +341,14 @@ db.materialized_view('mcdonalds_geocoded',
             mcdonalds m
             """)
 
+db.materialized_view('crime_geocoded',
+    create = """ CREATE MATERIALIZED VIEW crime_geocoded AS
+        SELECT
+            m.*,
+            ST_SetSRID(ST_MakePoint(m.Longitude, m.Latitude), 4326) as geom
+        FROM
+            crime m
+            """)
 
 db.index('companies_geocoded_index', create="CREATE INDEX companies_geocoded_index ON companies_geocoded USING GIST(geom)")
 db.index('lsoa_2001_ew_bfe_v2_clean_index', create="CREATE INDEX lsoa_2001_ew_bfe_v2_clean_index ON lsoa_2001_ew_bfe_v2_clean USING GIST(geom)")
