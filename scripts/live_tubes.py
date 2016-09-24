@@ -36,7 +36,7 @@ def get_stop_locations():
     for l in lines:
         stop_points = s.get(api_root + '/Line/' + l + '/StopPoints').json()
         for stop in stop_points:
-            stations[stop['stationNaptan']]  = geojson.Point((stop['lat'], stop['lon']))
+            stations[stop['stationNaptan']]  = geojson.Point((stop['lon'], stop['lat']))
     return stations
 
 def update_locs(loc_train):
@@ -56,6 +56,11 @@ def make_feature_collection(stations):
     collection = geojson.FeatureCollection(features)
     return collection
 
+def post_to(feature_collection):
+    r = requests.post('http://localhost:8080/api/layer/live/1234', json=feature_collection)
+    print(r)
+    return
+
 
 if __name__ == "__main__":
 
@@ -70,6 +75,6 @@ if __name__ == "__main__":
             if k in loc_train.keys() and v != loc_train[k]:
                 update_stations.append((k, stations[k]))
         updates = make_feature_collection(update_stations)
-        pprint(updates)
+        post_to(updates)
         loc_train = new_loc_train.copy()
         time.sleep(9)
