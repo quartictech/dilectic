@@ -22,6 +22,11 @@ lines = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city',
             'waterloo-city']
 lines_data = s.get(api_root + '/Line/' + ','.join(lines), params = {'app_id' : app_id, 'app_key' : app_key})
 
+def get_stop_name(naptan):
+    name = s.get(api_root + '/StopPoint/' + naptan)
+    return name.json()['commonName']
+
+
 def get_stop_locations():
     stations  = {}
     for l in lines:
@@ -47,7 +52,8 @@ def make_feature_collection(stations):
     features = []
     t = calendar.timegm(time.gmtime())
     for i, pos, ntrains in stations:
-        features.append(geojson.Feature(id=i, geometry=pos, properties={'timestamp':t, 'ntrains':ntrains}))
+        get_stop_name(i)
+        features.append(geojson.Feature(id=i, geometry=pos, properties={'timestamp':t, 'ntrains':ntrains, 'name':get_stop_name(i)}))
     collection = geojson.FeatureCollection(features)
     return collection
 
@@ -72,7 +78,7 @@ if __name__ == "__main__":
                 if len(new_trains) != 0:#the station sees trains arrive
                     update_stations.append((station, stations[station], len(new_trains)))
         updates = make_feature_collection(update_stations)
-        # pprint(updates)
+        pprint(updates)
         post_to(updates)
         loc_train = new_loc_train.copy()
         time.sleep(9)
