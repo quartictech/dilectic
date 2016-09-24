@@ -36,16 +36,20 @@ def get_stop_locations():
     for l in lines:
         stop_points = s.get(api_root + '/Line/' + l + '/StopPoints').json()
         for stop in stop_points:
-            stations[stop['stationNaptan']]  = geojson.Point((stop['lon'], stop['lat']))
+            stations[stop['stationNaptan']]  = geojson.Point((stop['lat'], stop['lon']))
     return stations
 
-def update_locs(loc_train):
+def get_stop_trains():
+    loc_train = {}
     resp = s.get(api_root + '/Line/' + ','.join(lines) + '/Arrivals')
     arrivals = resp.json()
     for a in arrivals:
         if 'naptanId' in a.keys():
             current_loc = a['naptanId']
-            loc_train[current_loc] = a['vehicleId']
+            if current_loc in loc_train.keys():
+                loc_train[current_loc].add(a['vehicleId'])
+            else:
+                loc_train[current_loc] = set([a['vehicleId']])
     return loc_train
 
 def make_feature_collection(stations):
@@ -57,7 +61,7 @@ def make_feature_collection(stations):
     return collection
 
 def post_to(feature_collection):
-    r = requests.post('http://localhost:8080/api/layer/live/1234', json=feature_collection)
+    r = requests.post('http://localhost:8080/api/layer/live/1234', data=feature_collection)
     print(r)
     return
 
@@ -69,12 +73,19 @@ if __name__ == "__main__":
     loc_train = {}#for every station, which train
     new_loc_train = {}
     while True:
-        new_loc_train = update_locs(new_loc_train)
+        new_loc_train = get_stop_trains()
         update_stations = []
-        for k, v in new_loc_train.items():
-            if k in loc_train.keys() and v != loc_train[k]:
-                update_stations.append((k, stations[k]))
-        updates = make_feature_collection(update_stations)
-        post_to(updates)
+        for station, trains in new_loc_train.items():
+            if station in loc_train.keys():
+                print(station)
+                print('new trains: {}'.format(trains))
+                print('old trains: {}'.format(loc_train[station]))
+                print(trains - loc_train[station])
+                break
+        #     if station in loc_train.keys() and v != loc_train[k]:
+        #         update_stations.append((k, stations[k]))
+        # updates = make_feature_collection(update_stations)
+        # print(updates)
+        # # post_to(updates)
         loc_train = new_loc_train.copy()
         time.sleep(9)
