@@ -5,19 +5,10 @@ import calendar
 import configparser
 from pprint import pprint
 import geojson
-import psycopg2
 import sys
 
-conn = psycopg2.connect("dbname=postgres user=postgres")
-cur = conn.cursor()
-cur.execute("SELECT * FROM naptan;")
 config = configparser.ConfigParser()
 config.read('tfl.conf')
-
-def get_naptan_locs(db_cursor, naptan):
-    query = db_cursor.mogfiry("SELECT * FROM naptan WHERE stopareacode IN %s;",
-                        naptan)
-    pass
 
 app_id = config['DEFAULT']['AppID']
 app_key = config['DEFAULT']['AppKey']
@@ -36,7 +27,7 @@ def get_stop_locations():
     for l in lines:
         stop_points = s.get(api_root + '/Line/' + l + '/StopPoints').json()
         for stop in stop_points:
-            stations[stop['stationNaptan']]  = geojson.Point((stop['lat'], stop['lon']))
+            stations[stop['stationNaptan']]  = geojson.Point((stop['lon'], stop['lat']))
     return stations
 
 def get_stop_trains():
@@ -55,13 +46,13 @@ def get_stop_trains():
 def make_feature_collection(stations):
     features = []
     t = calendar.timegm(time.gmtime())
-    for i, pos in stations:
-        features.append(geojson.Feature(id=i, geometry=pos, properties={'timestamp':t}))
+    for i, pos, ntrains in stations:
+        features.append(geojson.Feature(id=i, geometry=pos, properties={'timestamp':t, 'ntrains':ntrains}))
     collection = geojson.FeatureCollection(features)
     return collection
 
 def post_to(feature_collection):
-    r = requests.post('http://localhost:8080/api/layer/live/1234', data=feature_collection)
+    r = requests.post('http://localhost:8080/api/layer/live/1234', json=feature_collection)
     print(r)
     return
 
@@ -77,15 +68,11 @@ if __name__ == "__main__":
         update_stations = []
         for station, trains in new_loc_train.items():
             if station in loc_train.keys():
-                print(station)
-                print('new trains: {}'.format(trains))
-                print('old trains: {}'.format(loc_train[station]))
-                print(trains - loc_train[station])
-                break
-        #     if station in loc_train.keys() and v != loc_train[k]:
-        #         update_stations.append((k, stations[k]))
-        # updates = make_feature_collection(update_stations)
-        # print(updates)
-        # # post_to(updates)
+                new_trains = (trains - loc_train[station])
+                if len(new_trains) != 0:#the station sees trains arrive
+                    update_stations.append((station, stations[station], len(new_trains)))
+        updates = make_feature_collection(update_stations)
+        # pprint(updates)
+        post_to(updates)
         loc_train = new_loc_train.copy()
         time.sleep(9)
