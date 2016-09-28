@@ -9,18 +9,11 @@ services:
     environment:
       - POSTGRES_PASSWORD=dilectic
 
-  weyl-backend:
-    image: quartic/weyl-backend
+  weyl:
+    image: quartic/weyl
     ports:
       - "8080:8080"
     volumes:
       - ./weyl.yml:/weyl-service/weyl.yml
     depends_on:
       - "postgis"
-
-  weyl-frontend:
-    image: quartic/weyl-frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./weylConfig.js:/weyl-frontend/weylConfig.js
