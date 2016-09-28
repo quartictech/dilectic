@@ -1,6 +1,6 @@
 version: '2'
 services:
-  postgis-1:
+  postgis:
     image: mdillon/postgis
     ports:
       - "5432:5432"
@@ -8,3 +8,10 @@ services:
       - ./postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=dilectic
+
+  weyl-backend:
+    image: quartic/weyl-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./weyl.yml:/weyl-service/weyl.yml
