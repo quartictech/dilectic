@@ -34,16 +34,11 @@ def get_centre(coords):
     p = Polygon(coords[0])
     return (p.centroid.coords.xy[0][0], p.centroid.coords.xy[1][0])
 
-def prepare_geojson(tweet):
+def get_tweet_properties(tweet):
     t = json.loads(tweet)
-    coords = t['coordinates']
     country = None
     full_place_name = None
-    loc = None
-    if coords:
-        loc = geojson.Point((coords['coordinates'][0], coords['coordinates'][1]))
-    elif t['place']:
-        loc = geojson.Point(get_centre(t['place']['bounding_box']['coordinates']))
+    if t['place']:
         country = t['place']['country']
         full_place_name = t['place']['full_name']
     text = t['text']
@@ -52,9 +47,30 @@ def prepare_geojson(tweet):
     time = t['timestamp_ms']
     t_id = t['id']
     props = {'timestamp':time, 'user':user, 'text':text, 'country':country,
-                'place_name':full_place_name}
-    tweet_feature = geojson.Feature(id=t_id, geometry=loc, properties=props)
+                'place_name':full_place_name, 'id':t_id}
+    return props
+
+def prepare_geojson(tweet):
+    t = json.loads(tweet)
+    coords = t['coordinates']
+    t_id=t['id']
+    loc=None
+    if coords:
+        loc = geojson.Point((coords['coordinates'][0], coords['coordinates'][1]))
+    elif t['place']:
+        loc = geojson.Point(get_centre(t['place']['bounding_box']['coordinates']))
+    tweet_feature = geojson.Feature(id=t_id, geometry=loc, properties=None)
     return geojson.FeatureCollection(tweet_feature)
+
+def prepare_event(tweet):
+    e = {'name' : 'Twitter',
+    'description' : 'Events from Twitter'}
+    geojson = prepare_geojson(tweet)
+    events = [{'timestamp' : json.loads(tweet)['timestamp_ms'],
+                'featureCollection':prepare_geojson(tweet),
+                'feedEvent':get_tweet_properties(tweet)}]
+    e['events'] = events
+    pprint.pprint(e)
 
 def read_stream(request, outfile=None):
     if outfile:
@@ -82,8 +98,7 @@ def read_stream(request, outfile=None):
             for line in request.iter_lines():
                 try:
                     decoded = line.decode('utf-8')
-                    # pprint.pprint(json.loads(decoded))
-                    prepare_geojson(decoded)
+                    prepare_event(decoded)
                 except Exception as e:
                     print(e)
                     print(line)
