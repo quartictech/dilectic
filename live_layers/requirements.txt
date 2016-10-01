@@ -1,0 +1,2 @@
+eventregistry==6.0.10
+requests==2.11.1
