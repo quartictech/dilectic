@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 from metrology import Metrology
+import geojson
 
 def setup_stream():
     config = configparser.ConfigParser()
@@ -26,6 +27,17 @@ def setup_stream():
         auth=auth)
 
     return r
+
+def prepare_geojson(tweet):
+    t = json.loads(tweet)
+    coords = t['coordinates']
+    if coords:
+        loc = geojson.Point((coords['coordinates'][0], coords['coordinates'][1]))
+    else:
+        loc = geojson.Point(None)
+    print(loc)
+    # print(t.keys())
+    # pprint.pprint(json.loads(tweet))
 
 def read_stream(request, outfile=None):
     if outfile:
@@ -53,7 +65,8 @@ def read_stream(request, outfile=None):
             for line in request.iter_lines():
                 try:
                     decoded = line.decode('utf-8')
-                    pprint.pprint(json.loads(decoded))
+                    # pprint.pprint(json.loads(decoded))
+                    prepare_geojson(decoded)
                 except Exception as e:
                     print(e)
                     print(line)
