@@ -49,12 +49,14 @@ def read_stream(request, outfile=None):
                 except requests.exceptions.StreamConsumedError as e:
                     print(e)
     else:
-        try:
-            decoded = line.decode('utf-8')
-            pprint.pprint(json.loads(decoded))
-        except Exception as e:
-            print(e)
-            print(line)
+        while True:#to avoid the stream hanging up
+            for line in request.iter_lines():
+                try:
+                    decoded = line.decode('utf-8')
+                    pprint.pprint(json.loads(decoded))
+                except Exception as e:
+                    print(e)
+                    print(line)
 
 def get_tweets(outfile=None):
     r = setup_stream()
