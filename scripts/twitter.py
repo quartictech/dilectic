@@ -8,6 +8,8 @@ import sys
 import argparse
 from metrology import Metrology
 import geojson
+from shapely.geometry import Polygon
+
 
 def setup_stream():
     config = configparser.ConfigParser()
@@ -28,16 +30,31 @@ def setup_stream():
 
     return r
 
+def get_centre(coords):
+    p = Polygon(coords[0])
+    return (p.centroid.coords.xy[0][0], p.centroid.coords.xy[1][0])
+
 def prepare_geojson(tweet):
     t = json.loads(tweet)
     coords = t['coordinates']
+    country = None
+    full_place_name = None
+    loc = None
     if coords:
         loc = geojson.Point((coords['coordinates'][0], coords['coordinates'][1]))
-    else:
-        loc = geojson.Point(None)
-    print(loc)
-    # print(t.keys())
-    # pprint.pprint(json.loads(tweet))
+    elif t['place']:
+        loc = geojson.Point(get_centre(t['place']['bounding_box']['coordinates']))
+        country = t['place']['country']
+        full_place_name = t['place']['full_name']
+    text = t['text']
+    user = t['user']['screen_name']
+    place = t['place']
+    time = t['timestamp_ms']
+    t_id = t['id']
+    props = {'timestamp':time, 'user':user, 'text':text, 'country':country,
+                'place_name':full_place_name}
+    tweet_feature = geojson.Feature(id=t_id, geometry=loc, properties=props)
+    return geojson.FeatureCollection(tweet_feature)
 
 def read_stream(request, outfile=None):
     if outfile:
