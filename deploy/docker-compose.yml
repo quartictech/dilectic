@@ -11,11 +11,16 @@ services:
 
   weyl:
     image: registry.gitlab.com/quartic/weyl
-    ports:
-      - "8080:8080"
     volumes:
-      - ./weyl.yml:/weyl-service/weyl.yml
+      - ./weyl/weyl.yml:/weyl-service/weyl.yml
     environment:
       - WEYL_SERVICE_OPTS=-Xms32g -Xmx32g
     depends_on:
       - "postgis"
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx
