@@ -19,5 +19,3 @@
    London borough profiles from [here](http://data.london.gov.uk/dataset/london-borough-profiles)
  - `London-price-paid-house-price-data-since-1995-CSV.zip`
    London price paid data
-# Pre-processing
- - Import greater-london-latest.osm.pbf into postgres
