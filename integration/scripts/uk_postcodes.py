@@ -2,7 +2,7 @@ import csv
 import os.path
 
 def fill_postcodes_table(data_dir):
-    f = open(os.path.join(data_dir, "ukpostcodes.csv"))
+    f = open(os.path.join(data_dir, "derived", "ukpostcodes.csv"))
     rdr = csv.reader(f)
     next(rdr)
     for row in rdr:

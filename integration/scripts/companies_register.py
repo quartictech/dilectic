@@ -29,6 +29,6 @@ def extract_companies_zip(fname):
         yield from process_companies_csv(f)
 
 def fill_companies_table(data_dir):
-    path = os.path.join(data_dir, 'register/zip/*.zip')
+    path = os.path.join(data_dir, "raw", "register/zip/*.zip")
     for f in glob.glob(path):
         yield from extract_companies_zip(f)
