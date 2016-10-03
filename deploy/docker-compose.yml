@@ -1,0 +1,28 @@
+version: '2'
+services:
+  postgis:
+    image: mdillon/postgis
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=dilectic
+
+  weyl:
+    image: registry.gitlab.com/quartic/weyl
+    volumes:
+      - ./weyl/weyl.yml:/weyl-service/weyl.yml
+    environment:
+      - WEYL_SERVICE_OPTS=-Xms32g -Xmx32g
+    links:
+      - "postgis"
+
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx
+    links:
+      - "weyl"
