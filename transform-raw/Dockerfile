@@ -5,7 +5,9 @@ FROM ubuntu:latest
 MAINTAINER Alex Sparrow "alex@quartic.io"
 
 RUN apt-get update
-RUN apt-get install -y osm2pgsql postgis unzip python3 python3-pip git
+RUN apt-get install -y osm2pgsql postgis unzip python3 python3-pip git libffi-dev 
+
+RUN apt-get install -y libpq-dev zip
 
 WORKDIR /home
 RUN git clone https://github.com/dilshod/xlsx2csv.git
@@ -16,6 +18,6 @@ RUN python setup.py install
 VOLUME ["/home/data/raw", "home/data/out"]
 
 ENV INPUT=/home/data/raw
-ENV OUTPUT=/home/data/out
+ENV OUTPUT=/home/data/derived
 
 WORKDIR /home/work

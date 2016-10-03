@@ -5,7 +5,8 @@ from datetime import datetime
 
 
 def fill_crime_table(data_dir):
-    paths = glob.glob(data_dir + '/crime_data/*/*')
+    paths = glob.glob(os.path.join(data_dir, 'derived', 'crime_data/*/*'))
+    assert len(paths) > 0
     counter = 0
     for files in paths:
         with open(files) as f:

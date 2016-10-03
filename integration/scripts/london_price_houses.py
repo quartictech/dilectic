@@ -75,6 +75,6 @@ def process_prices_zip(path):
                 yield values
 
 def fill_london_house_prices(data_dir):
-    data = 'london_datastore/London-price-paid-house-price-data-since-1995-CSV.zip'
-    path = os.path.join(data_dir, data)
+    data = 'London-price-paid-house-price-data-since-1995-CSV.zip'
+    path = os.path.join(data_dir, "raw", data)
     yield from process_prices_zip(path)

@@ -2,7 +2,6 @@ import os
 import csv
 import glob
 
-data_dir = '/Users/arlogb/quartic/dilectic/data/'
 
 def process_csv(f):
     owner = f.split('/')[-1].strip('_assets.csv')
@@ -18,7 +17,7 @@ def process_csv(f):
             yield line
 
 def fill_land_and_assets_table(data_dir):
-    path = os.path.join(data_dir, 'london_datastore/gla_land_assets/*.csv')
+    path = os.path.join(data_dir, "raw", 'gla-land-assets/*.csv')
     for f in glob.glob(path):
         yield from process_csv(f)
 

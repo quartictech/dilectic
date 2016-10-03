@@ -1,3 +1,4 @@
+#!/bin/sh
 shp_to_sql() {
     shp2pgsql -s $3 $1 $2 > $OUTPUT/$2.sql
 }
@@ -26,6 +27,8 @@ shp_to_sql LSOA_2011_EW_BFE_V2.shp lsoa_2011_ew_bfe_v2 27700
 
 unzip $INPUT/UK-postcode-boundaries-Jan-2015.zip
 shp_to_sql Distribution/Areas.shp postcode_areas 27700
-shp_to_sql Distribution/Districts postcode_disticts 27700
+shp_to_sql Distribution/Districts postcode_districts 27700
 shp_to_sql Distribution/Sectors.shp postcode_sectors 27700
 
+unzip $INPUT/crime_data.zip -d $OUTPUT
+unzip $INPUT/ukpostcodes.zip -d $OUTPUT
