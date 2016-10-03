@@ -10,10 +10,12 @@ services:
       - POSTGRES_PASSWORD=dilectic
 
   weyl:
-    image: quartic/weyl
+    image: registry.gitlab.com/quartic/weyl
     ports:
       - "8080:8080"
     volumes:
       - ./weyl.yml:/weyl-service/weyl.yml
+    environment:
+      - WEYL_SERVICE_OPTS=-Xms32g -Xmx32g
     depends_on:
       - "postgis"
