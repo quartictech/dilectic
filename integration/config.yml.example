@@ -4,4 +4,4 @@ db:
   dbname: postgres
   user: postgres
   password: dilectic
-data_dir: ./data
+data_dir: /home/data

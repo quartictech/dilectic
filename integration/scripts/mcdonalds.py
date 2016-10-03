@@ -2,7 +2,7 @@ import csv
 import os.path
 
 def fill_mcdonalds_table(data_dir):
-    path = os.path.join(data_dir, 'mcdonalds.csv')
+    path = os.path.join(data_dir, "raw", 'mcdonalds.csv')
     with open(path) as f:
         rdr = csv.reader(f)
         next(rdr)

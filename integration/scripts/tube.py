@@ -3,7 +3,7 @@ from pprint import pprint
 import json
 
 def fill_tube(data_dir):
-    with open(os.path.join(data_dir, "tfl_lines.json")) as f:
+    with open(os.path.join(data_dir, "raw", "tfl_lines.json")) as f:
         data = json.load(f)
         for row in data["features"]:
             props = row["properties"]

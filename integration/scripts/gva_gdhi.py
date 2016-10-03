@@ -66,7 +66,7 @@ def process_workbook(wb):
     return table
 
 def gva_gdhi_to_pg(data_dir):
-        wb = open_workbook(os.path.join(data_dir, 'london_datastore/GVA-GDHI-nuts3-regions-uk.xls'))
+        wb = open_workbook(os.path.join(data_dir, 'raw', 'GVA-GDHI-nuts3-regions-uk.xls'))
         table = process_workbook(wb)
         table.pop('headers')
         for k, v in table.items():
