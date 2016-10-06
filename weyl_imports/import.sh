@@ -63,7 +63,7 @@ curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_impo
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/buildings.json
 #curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/tubes.json
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/rail.json
-curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/nightlife_query.json
+#curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/nightlife_query.json
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_imports/tube_query.json
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{

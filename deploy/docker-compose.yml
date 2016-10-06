@@ -11,6 +11,8 @@ services:
 
   weyl:
     image: registry.gitlab.com/quartic/weyl
+    ports:
+      - "8080:8080"
     volumes:
       - ./weyl/weyl.yml:/weyl-service/weyl.yml
     environment:
