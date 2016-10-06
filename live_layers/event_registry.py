@@ -1,17 +1,19 @@
 from eventregistry import *
+import pprint
 er = EventRegistry()
-# top 10 trending concepts in the news
-q = GetTrendingConcepts(source = "news", count = 10)
-print er.execQuery(q)
+er.login('arlo@quartic.io', 'EventRegAGB30/07')
+# q = QueryEvents()
+# q.addConcept(er.getConceptUri("London"))
+# q.addConcept(er.getLocationUri("London"))
+# event_info = RequestEventsInfo(page=1, count=20, sortBy='rel')
+# q.addRequestedResult(event_info)
+# res = er.execQuery(q)
+# pprint.pprint(res)
 
+# recent_articles = GetRecentArticles(maxArticleCount=200)
+# pprint.pprint(recent_articles.getUpdates(er))
 
-q = QueryArticles()
-# set the date limit of interest
-q.setDateLimit(datetime.date(2014, 4, 16), datetime.date(2014, 4, 28))
-# find articles mentioning the company Apple
-q.addConcept(er.getConceptUri("Apple"))
-# return the list of top 30 articles, including the concepts, categories and article image
-q.addRequestedResult(RequestArticlesInfo(page = 1, count = 30,
-    returnInfo = ReturnInfo(articleInfo = ArticleInfoFlags(concepts = True, categories = True, image = True))))
-res = er.execQuery(q)
-print res
+recent_events = GetRecentEvents(maxEventCount=100)
+ret = recent_events.getUpdates(er)
+pprint.pprint(ret)
+print ret.keys()

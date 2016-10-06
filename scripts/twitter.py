@@ -15,8 +15,10 @@ def setup_stream():
     config = configparser.ConfigParser()
     config.read('twitter.conf')
 
-    query = {'locations' : config['query']['locations'],
-           'track' : config['query']['track']}
+    # query = {'locations' : config['query']['locations'],
+    #        'track' : config['query']['track']}
+
+    query = {'track' : config['query']['track']}
 
     s = requests.Session()
     auth = OAuth1(
@@ -46,8 +48,9 @@ def get_tweet_properties(tweet):
     place = t['place']
     time = t['timestamp_ms']
     t_id = t['id']
-    props = {'timestamp':time, 'user':user, 'text':text, 'country':country,
-                'place_name':full_place_name, 'id':t_id}
+    # props = {'timestamp':time, 'user':user, 'message':text, 'country':country,
+                # 'place_name':full_place_name, 'id':t_id, 'source':user}
+    props = {'source':user, 'message':text}
     return props
 
 def prepare_geojson(tweet):
@@ -59,18 +62,27 @@ def prepare_geojson(tweet):
         loc = geojson.Point((coords['coordinates'][0], coords['coordinates'][1]))
     elif t['place']:
         loc = geojson.Point(get_centre(t['place']['bounding_box']['coordinates']))
-    tweet_feature = geojson.Feature(id=t_id, geometry=loc, properties=None)
-    return geojson.FeatureCollection(tweet_feature)
+    if loc:
+        tweet_feature = geojson.Feature(id=t_id, geometry=loc, properties=None)
+    else:
+        return None
+    return geojson.FeatureCollection([tweet_feature])
+
+def post_shit(tweet, API_ROOT):
+    r = requests.post("{}/layer/live/{}".format(API_ROOT, "Twitter"), json=tweet)
+    print(r.text)
 
 def prepare_event(tweet):
     e = {'name' : 'Twitter',
-    'description' : 'Events from Twitter'}
+    'description' : 'Events from Twitter',
+    'viewType' : 'LOCATION_AND_TRACK'}
     geojson = prepare_geojson(tweet)
     events = [{'timestamp' : json.loads(tweet)['timestamp_ms'],
                 'featureCollection':prepare_geojson(tweet),
                 'feedEvent':get_tweet_properties(tweet)}]
     e['events'] = events
     pprint.pprint(e)
+    post_shit(e, "http://localhost:8080/api")
 
 def read_stream(request, outfile=None):
     if outfile:
@@ -99,6 +111,8 @@ def read_stream(request, outfile=None):
                 try:
                     decoded = line.decode('utf-8')
                     prepare_event(decoded)
+                    # import sys
+                    # sys.exit()
                 except Exception as e:
                     print(e)
                     print(line)
