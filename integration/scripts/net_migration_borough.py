@@ -31,9 +31,11 @@ def fill_migration_borough_table(data_dir,cur):
                 continue
             ts = make_ts(dict(zip(headers[2:],line[2:])))
             cur.execute("INSERT INTO migration_boroughs VALUES (%s, %s, %s, %s, %s, %s)",
-                        (line[0], line[1], json.dumps(ts['natchange']), json.dumps(ts['international_net']),
-                        json.dumps(ts['internal_net']), json.dumps(ts['other_change'])))
+                        (line[0], line[1], json.dumps({'type' : 'timeseries', 'series' : ts['natchange']}),
+                        json.dumps({'type' : 'timeseries', 'series' : ts['international_net']}),
+                        json.dumps({'type' : 'timeseries', 'series' : ts['internal_net']}),
+                        json.dumps({'type' : 'timeseries', 'series' : ts['other_change']})))
 
 
 if __name__ == "__main__":
-    fill_migration_borough_table('../../data/')
+    fill_migration_borough_table('../../data/',None)
