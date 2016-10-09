@@ -2,24 +2,22 @@ import csv
 import os.path
 from datetime import datetime
 import json
+from collections import defaultdict
 
 def make_ts(values):
-    migration_ts = {}
+    migration_ts = defaultdict(list)
     for k, v in values.items():
         migration_year = k.rsplit("_", 1)
         m_type = migration_year[0]
         year = migration_year[1]
-        if m_type in migration_ts.keys():
-            migration_ts[m_type]["{}-{}-{}".format(int(year), 1, 1)] = int(v.replace(',',''))
-        else:
-            migration_ts[m_type] = {"{}-{}-{}".format(int(year), 1, 1):int(v.replace(',',''))}
+        timestamp = int(datetime(int(year), 1, 1).strftime("%s")) * 1000
+        migration_ts[m_type].append({"timestamp": timestamp, "value": int(v.replace(',',''))})
     # print(migration_ts)
     return migration_ts
 
 def fill_migration_borough_table(data_dir,cur):
     path = os.path.join(data_dir, 'derived',
-        'london_datastore/net-migration-natural-change-region-borough',
-        'Net Change Borough-Table 1.csv')
+        'net-migration-natural-change-region-borough.csv')
 
     with open(path) as f:
         rdr = csv.reader(f)

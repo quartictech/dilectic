@@ -4,7 +4,7 @@ source $DIR/config.sh
 
 docker_run() {
  echo "Running $1 in docker"
- sudo docker run --net="host" -v $DIR:/home/integration -v $DERIVED_DIR:/home/data/derived -v $RAW_DIR:/home/data/raw data-integration /home/integration/$1
+ docker run --net="host" -v $DIR:/home/integration -v $DERIVED_DIR:/home/data/derived -v $RAW_DIR:/home/data/raw data-integration /home/integration/$1
 }
 
 #docker_run 0-from-raw.sh
