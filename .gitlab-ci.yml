@@ -1,4 +1,4 @@
-image: docker:latest
+image: quartic/uber-builder
 
 services:
   - docker:dind
@@ -9,6 +9,7 @@ cache:
      - data/raw
 
 before_script:
+  - export DOCKER_HOST=tcp://docker:2375
   - mkdir -p data/raw data/derived
   - docker run --rm -v $(pwd)/data/raw:/data/raw google/cloud-sdk gsutil -m rsync gs://quartic-newyork/raw-data /data/raw
 
