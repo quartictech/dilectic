@@ -4,7 +4,7 @@ source $DIR/config.sh
 
 docker_run() {
   echo "Running $1 in docker"
-  docker run --net="host" \
+  docker run --rm --net="host" \
     -v $DIR:/integration \
     -v $DERIVED_DIR:/derived \
     -v $RAW_DIR:/raw \

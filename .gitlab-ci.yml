@@ -1,0 +1,18 @@
+image: docker:git
+
+services:
+  - docker:dind
+
+cache:
+  key: "$CI_BUILD_NAME"
+  paths:
+     - data/raw
+
+before_script:
+  - docker run --rm -ti google/cloud-sdk gsutil rsync gs://quartic-newyork/raw-data ./data/raw
+
+build:
+  stage: build
+  script:
+    - cd integration
+    - ./run.sh
