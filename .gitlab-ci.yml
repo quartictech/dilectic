@@ -1,7 +1,4 @@
-image: docker:git
-
-services:
-  - docker:dind
+image: quartic/uber-builder
 
 cache:
   key: "$CI_BUILD_NAME"
@@ -16,4 +13,4 @@ build:
   stage: build
   script:
     - cd integration
-    - bash ./run.sh
+    - ./run.sh
