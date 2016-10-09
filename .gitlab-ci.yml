@@ -16,4 +16,4 @@ build:
   stage: build
   script:
     - cd integration
-    - ./run.sh
+    - bash ./run.sh
