@@ -10,7 +10,7 @@ cache:
 
 before_script:
   - mkdir -p data/raw data/derived
-  - docker run --rm -v $(pwd)/data:/data google/cloud-sdk gsutil rsync gs://quartic-newyork/raw-data /data/raw
+  - docker run --rm -v $(pwd)/data/raw:/data/raw google/cloud-sdk gsutil rsync gs://quartic-newyork/raw-data /data/raw
 
 build:
   stage: build
