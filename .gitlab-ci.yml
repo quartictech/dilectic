@@ -1,4 +1,4 @@
-image: quartic/uber-builder
+image: docker:latest
 
 services:
   - docker:dind
