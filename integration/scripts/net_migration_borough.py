@@ -25,7 +25,7 @@ def fill_migration_borough_table(data_dir,cur):
         headers = next(rdr)
         #table like code, name, migration_type_ts1, migration_type_ts2
         for line in rdr:
-            if line[0] == '':
+            if len(line) == 0 or line[0] == '':
                 continue
             ts = make_ts(dict(zip(headers[2:],line[2:])))
             cur.execute("INSERT INTO migration_boroughs VALUES (%s, %s, %s, %s, %s, %s)",
