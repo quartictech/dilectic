@@ -1,8 +1,5 @@
 image: quartic/uber-builder
 
-services:
-  - docker:dind
-
 cache:
   key: "$CI_BUILD_NAME"
   paths:
