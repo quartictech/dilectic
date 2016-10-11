@@ -1,31 +1,41 @@
-import requests
 import json
+import requests
 import geojson
 import pprint
 from utils import post_shit
+
+API_ROOT = 'http://localhost:8080/api'
 
 
 def prepare_geojson(d):
     loc = d.get('geography')#already geojson
     geom = d.get('geometry')
-    event = {'timestamp' : d['currentUpdateDateTime'],
+    props = {'timestamp' : d['currentUpdateDateTime'],
+            'location' : d['location'],
             'severity' : d['severity'],
             'category' : d['category'],
-            'subcategory' : d['subCategory'],
-            'comments' : d.get('comments'),
-            'currentUpdate' : d.get('currentUpdate')}
-    feat1 = geojson.Feature(id=d['id'], geometry=loc, properties=event)
-    feat2 = geojson.Feature(id=d['id'], geometry=geom, properties=event)
-    return geojson.FeatureCollection([feat1, feat2])
+            'subcategory' : d['subCategory']}
+    if 'comments' in d.keys():
+        props['comments'] = d.get('comments')
+    if 'currentUpdate' in d.keys():
+        props['currentUpdate'] = d.get('currentUpdate')
+    feat1 = geojson.Feature(id=d['id'], geometry=loc, properties=props)
+    feat2 = geojson.Feature(id=d['id'], geometry=geom, properties=props)
+    return geojson.FeatureCollection([feat2])
 
 def prepare_events(disruptions):
     e = {'name' : 'Road Disruptions',
-        'description' : 'TfL Road Disruptions'}
+        'description' : 'TfL Road Disruptions',
+        'viewType' : 'LOCATION_AND_TRACK',
+        }
     events = []
     for d in disruptions:
-        events.append(prepare_geojson(d))
+        event = {
+            'timestamp' : d['currentUpdateDateTime'],
+            'featureCollection' : prepare_geojson(d)
+        }
+        events.append(event)
     e['events'] = events
-    post_shit('Disruptions', e, API_ROOT)
     return e
 
 
@@ -36,3 +46,4 @@ if __name__=="__main__":
 
     events = prepare_events(disruptions)
     pprint.pprint(events)
+    post_shit('7777', events, API_ROOT)
