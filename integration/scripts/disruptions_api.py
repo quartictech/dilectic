@@ -2,7 +2,7 @@ import json
 import requests
 import geojson
 import pprint
-from utils import post_shit
+from utils import post_events
 
 API_ROOT = 'http://localhost:8080/api'
 
