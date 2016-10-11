@@ -26,6 +26,7 @@ def prepare_geojson(d):
 def prepare_events(disruptions):
     e = {'name' : 'Road Disruptions',
         'description' : 'TfL Road Disruptions',
+        'icon' : 'red car',
         'viewType' : 'LOCATION_AND_TRACK',
         }
     events = []
