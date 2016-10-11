@@ -30,23 +30,26 @@ class DBMake(object):
         return self._create('index', name, create, None, None)
 
     def table(self, name, create=None, sql_file=None, fill=None, **kwargs):
-        return self._create('table', name, create, sql_file, fill)
+        return self._create('table', name, create, sql_file, fill, **kwargs)
 
     def materialized_view(self, name, create=None):
         return self._create('materialized view', name, create, None, None)
 
     def _run_fill(self, name, conn, fill, **kwargs):
-        with tempfile.NamedTemporaryFile(mode='w+') as tmp_file:
-            writer = csv.writer(tmp_file, delimiter='\t')
-            count = 0
-            for row in fill(self.data_dir):
-                if count % 10000 == 0:
-                    print(count)
-                writer.writerow(row)
-                count += 1
-            tmp_file.seek(0)
-            with conn.cursor() as curs:
-                curs.copy_from(tmp_file, name, null='')
+        if kwargs.get('direct') == True:
+            fill(self.data_dir, conn.cursor())
+        else:
+            with tempfile.NamedTemporaryFile(mode='w+') as tmp_file:
+                writer = csv.writer(tmp_file, delimiter='\t')
+                count = 0
+                for row in fill(self.data_dir):
+                    if count % 10000 == 0:
+                        print(count)
+                    writer.writerow(row)
+                    count += 1
+                tmp_file.seek(0)
+                with conn.cursor() as curs:
+                    curs.copy_from(tmp_file, name, null='')
 
     def _create(self, type, name, create, sql_file, fill, **kwargs):
         if create is None and sql_file is None:

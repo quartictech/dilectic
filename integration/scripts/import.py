@@ -11,6 +11,7 @@ from tube import fill_tube
 from naptan import fill_naptan
 from crime import fill_crime_table
 from jamcams import fill_jamcams
+from net_migration_borough import fill_migration_borough_table
 import os.path
 
 db = DBMake()
@@ -27,6 +28,21 @@ db.table('jamcams',
         PostCode VARCHAR
         )""",
         fill=fill_jamcams)
+
+db.table('migration_boroughs',
+    create="""CREATE TABLE IF NOT EXISTS migration_boroughs (
+        BoroughCode VARCHAR,
+        Borough VARCHAR,
+        NatChange JSON,
+        InternalNet JSON,
+        InternationalNet JSON,
+        OtherChange JSON
+
+    )""",
+    fill=fill_migration_borough_table,
+    direct=True)
+
+
 
 db.materialized_view('jamcams_geocoded',
     create = """ CREATE MATERIALIZED VIEW jamcams_geocoded AS
@@ -255,7 +271,7 @@ db.table('mcdonalds',
     )""",
     fill=fill_mcdonalds_table)
 
-#db.table('naptan',
+# db.table('naptan',
 #    create="""CREATE TABLE IF NOT EXISTS naptan (
 #        StopAreaCode VARCHAR,
 #        Name VARCHAR,

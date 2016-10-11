@@ -28,8 +28,9 @@ curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{
  	"name": "London Boroughs",
  	"description": "London Borough Boundaries",
- 	"query": "SELECT lb.name, lb.geom, lbp.* from london_borough_excluding_mhw lb left join london_borough_profiles lbp on lb.name = lbp.AreaName"
+ 	"query": "SELECT lb.name, lb.geom, lbp.*, mb.* from london_borough_excluding_mhw lb left join london_borough_profiles lbp on lb.name = lbp.AreaName left join migration_boroughs mb ON lb.name=mb.borough"
 }'
+
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{
 	"name": "London House Sales",
