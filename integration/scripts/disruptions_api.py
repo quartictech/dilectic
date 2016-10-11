@@ -2,6 +2,7 @@ import requests
 import json
 import geojson
 import pprint
+from utils import post_shit
 
 
 def prepare_geojson(d):
@@ -24,6 +25,7 @@ def prepare_events(disruptions):
     for d in disruptions:
         events.append(prepare_geojson(d))
     e['events'] = events
+    post_shit('Disruptions', e, API_ROOT)
     return e
 
 
