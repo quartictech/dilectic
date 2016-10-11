@@ -1,0 +1,9 @@
+{
+  "name": "Residential",
+  "description": "Residential buildings",
+  "query" : "SELECT * FROM planet_osm_polygon where landuse IN
+  ('residential', 'retail;residential') or building IN
+  ('house', 'country_house', 'palace', 'apartments', 'semidetached_house',
+  'houses', 'flats', 'tower_block', 'terrace_house', 'residential', 'tower',
+  'block', 'hall_of_residence', 'yes;house','council_flats')"
+}
