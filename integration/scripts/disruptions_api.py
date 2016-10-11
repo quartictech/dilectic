@@ -46,4 +46,4 @@ if __name__=="__main__":
 
     events = prepare_events(disruptions)
     pprint.pprint(events)
-    post_shit('7777', events, API_ROOT)
+    post_events('7777', events, API_ROOT)
