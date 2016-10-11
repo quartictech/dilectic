@@ -70,7 +70,8 @@ curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d @json_impo
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{
 	"name": "Jamcams",
 	"description": "TFL traffic camera feeds",
-	"query": "select * from jamcams_geocoded"
+	"query": "select * from jamcams_geocoded",
+  "icon": "purple camera"
 }'
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/layer/import -d '{
