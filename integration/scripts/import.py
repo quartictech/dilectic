@@ -271,23 +271,23 @@ db.table('mcdonalds',
     )""",
     fill=fill_mcdonalds_table)
 
-# db.table('naptan',
-#    create="""CREATE TABLE IF NOT EXISTS naptan (
-#        StopAreaCode VARCHAR,
-#        Name VARCHAR,
-#        NameLang VARCHAR,
-#        AdministrativeAreaCode VARCHAR,
-#        StopAreaType VARCHAR,
-#        GridType VARCHAR,
-#        Easting INT,
-#        Northing INT,
-#        CreationDateTime DATE,
-#        ModificationDateTime DATE,
-#        RevisionNumber INT,
-#        Modification VARCHAR,
-#        Status VARCHAR
-#    )""",
-#    fill=fill_naptan)
+db.table('naptan',
+   create="""CREATE TABLE IF NOT EXISTS naptan (
+       StopAreaCode VARCHAR,
+       Name VARCHAR,
+       NameLang VARCHAR,
+       AdministrativeAreaCode VARCHAR,
+       StopAreaType VARCHAR,
+       GridType VARCHAR,
+       Easting INT,
+       Northing INT,
+       CreationDateTime DATE,
+       ModificationDateTime DATE,
+       RevisionNumber INT,
+       Modification VARCHAR,
+       Status VARCHAR
+   )""",
+   fill=fill_naptan)
 
 db.table('crime',
 create="""CREATE TABLE IF NOT EXISTS crime (
