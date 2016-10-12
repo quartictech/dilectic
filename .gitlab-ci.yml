@@ -15,6 +15,7 @@ build:
   stage: build
   script:
     - HOST_DIR=$(docker inspect --format="{{ range .Mounts }}{{ if eq .Destination \"$(dirname $(pwd))\" }}{{ .Source }}{{ end }}{{end}}" $(hostname)-build)/$(basename $(pwd))
+    - echo ${HOST_DIR}
     - cd integration
     - cp config.yml.example config.yml
     - ./run.sh ${HOST_DIR}
