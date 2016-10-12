@@ -1,6 +1,6 @@
 ---
 db:
-  host: localhost
+  host: mdillon__postgis
   dbname: postgres
   user: postgres
   password: dilectic

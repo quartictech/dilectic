@@ -1,5 +1,8 @@
 image: quartic/uber-builder
 
+services:
+  - mdillon/postgis
+
 cache:
   key: "$CI_BUILD_NAME"
   paths:
@@ -9,7 +12,6 @@ before_script:
   - HOST_DIR=$(docker inspect --format="{{ range .Mounts }}{{ if eq .Destination \"$(dirname $(pwd))\" }}{{ .Source }}{{ end }}{{end}}" $(hostname)-build)/$(basename $(pwd))
   - mkdir -p data/raw data/derived
   - docker run --rm -v ${HOST_DIR}/data/raw:/data/raw google/cloud-sdk gsutil -m rsync gs://quartic-newyork/raw-data /data/raw
-  - docker run -d -p5432:5432 --name ${CI_BUILD_REF} mdillon/postgis
 
 build:
   stage: build
@@ -19,6 +21,3 @@ build:
     - cd integration
     - cp config.yml.example config.yml
     - ./run.sh ${HOST_DIR}
-
-after_script:
-  - docker rm -vf ${CI_BUILD_REF}
