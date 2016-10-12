@@ -14,6 +14,7 @@ docker_run() {
     -v ${ROOT_DIR}/data/derived:/derived \
     -e "INPUT=/raw" \
     -e "OUTPUT=/derived" \
+    -e "INTEGRATION=/integration" \
     -w /work \
     quartic/data-worker \
     /integration/$1
