@@ -1,13 +1,17 @@
 #!/bin/bash
+set -u
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+ROOT_DIR=${1}
+
 source $DIR/config.sh
 
 docker_run() {
   echo "Running $1 in docker"
   docker run --rm --net="host" \
-    -v $DIR:/integration \
-    -v $DERIVED_DIR:/derived \
-    -v $RAW_DIR:/raw \
+    -v ${ROOT_DIR}/integration:/integration \
+    -v ${ROOT_DIR}/data/raw:/raw \
+    -v ${ROOT_DIR}/data/derived:/derived \
     -e "INPUT=/raw" \
     -e "OUTPUT=/derived" \
     -w /work \
