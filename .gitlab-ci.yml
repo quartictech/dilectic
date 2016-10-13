@@ -1,7 +1,7 @@
 image: quartic/uber-builder
 
 services:
-  - mdillon/postgis
+  - postgres
 
 cache:
   key: "$CI_BUILD_NAME"
