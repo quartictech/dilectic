@@ -1,8 +1,5 @@
 image: quartic/uber-builder
 
-services:
-  - postgres
-
 cache:
   key: "$CI_BUILD_NAME"
   paths:
@@ -15,6 +12,8 @@ before_script:
 
 build:
   stage: build
+  image:
+    - postgres
   script:
     - HOST_DIR=$(docker inspect --format="{{ range .Mounts }}{{ if eq .Destination \"$(dirname $(pwd))\" }}{{ .Source }}{{ end }}{{end}}" $(hostname)-build)/$(basename $(pwd))
     - echo ${HOST_DIR}
