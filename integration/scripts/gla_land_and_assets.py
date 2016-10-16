@@ -5,7 +5,7 @@ import glob
 
 def process_csv(f):
     owner = f.split('/')[-1].strip('_assets.csv')
-    with open(f) as csvfile:
+    with open(f, encoding='windows-1252') as csvfile:
         rdr = csv.reader(csvfile)
         next(rdr) #jump the headers
         for line in rdr:
@@ -17,7 +17,7 @@ def process_csv(f):
             yield line
 
 def fill_land_and_assets_table(data_dir):
-    path = os.path.join(data_dir, "raw", 'gla-land-assets/*.csv')
+    path = os.path.join(data_dir, "derived", 'gla-land-assets/*.csv')
     for f in glob.glob(path):
         yield from process_csv(f)
 

@@ -39,7 +39,7 @@ class DBMake(object):
         if kwargs.get('direct') == True:
             fill(self.data_dir, conn.cursor())
         else:
-            with tempfile.NamedTemporaryFile(mode='w+') as tmp_file:
+            with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tmp_file:
                 writer = csv.writer(tmp_file, delimiter='\t')
                 count = 0
                 for row in fill(self.data_dir):
