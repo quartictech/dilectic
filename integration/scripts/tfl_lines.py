@@ -4,7 +4,7 @@ from pprint import pprint
 import csv
 import time
 import psycopg2
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 APP_ID="4abd99df"
 APP_KEY="0f76ba70a21836b0991d192dceae511b"
@@ -42,9 +42,9 @@ def lookup_line(line_id):
     for direction in ['inbound', 'outbound']:
         r = request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
         stop_points =  r['stopPointSequences'][0]
-        stops = []
+        stops = OrderedDict()
         for stop in stop_points['stopPoint']:
-            stops.append((stop['id'], stop['name'], stop['lat'], stop['lon']))
+            stops[stop['id']] = (stop['name'], stop['lat'], stop['lon'])
         stops_direction[direction] = stops
     return stops_direction
 
@@ -59,6 +59,17 @@ def fetch_arrival_predictions(line):
     return {bus: sorted(arrivals, key=lambda k: k['timeToStation']) for bus, arrivals in bus_arrivals.items()}
     # json.dump(r, open("{0}.json".format(line), "w"), indent=1)
 
+def previous_stop(bus, line):
+    next_stop = bus['naptanId']
+    line_direction = line[bus['direction']]
+    next_index = list(line_direction.keys()).index(next_stop)
+    print('{} and stop {}'.format(next_index, line_direction[next_stop]))
+    print('{} and stop {}'.format(next_index-1, list(line_direction.values())[next_index-1]))
+    return list(line_direction.values())[next_index-1]
+
+
+
+
 def create_table(curs):
     curs.execute("""
         CREATE TABLE IF NOT EXISTS tfl_arrivals(
@@ -72,7 +83,7 @@ def create_table(curs):
 
 if __name__ == "__main__":
     test = fetch_arrival_predictions('88')
-    pprint(test)
+    previous_stop(test['LTZ1506'][0], lookup_line('88'))
     # conn_str = "host=localhost dbname=postgres user=postgres password=dilectic"
     # conn = psycopg2.connect(conn_str)
     # curs = conn.cursor()
