@@ -49,10 +49,15 @@ def lookup_line(line_id):
     return stops_direction
 
 def fetch_arrival_predictions(line):
+    bus_arrivals = {}
     r = request("/line/{0}/arrivals".format(line))
     for bus in r:
-        yield bus
-    json.dump(r, open("{0}.json".format(line), "w"), indent=1)
+        if bus['vehicleId'] in bus_arrivals.keys():
+            bus_arrivals[bus['vehicleId']].append(bus)
+        else:
+            bus_arrivals[bus['vehicleId']] = [bus]
+    return bus_arrivals
+    # json.dump(r, open("{0}.json".format(line), "w"), indent=1)
 
 def create_table(curs):
     curs.execute("""
