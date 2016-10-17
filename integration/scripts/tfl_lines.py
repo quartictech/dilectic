@@ -5,6 +5,9 @@ import csv
 import time
 import psycopg2
 from collections import defaultdict, OrderedDict
+import geojson
+import datetime
+import utils
 
 APP_ID="4abd99df"
 APP_KEY="0f76ba70a21836b0991d192dceae511b"
@@ -59,13 +62,35 @@ def fetch_arrival_predictions(line):
     return {bus: sorted(arrivals, key=lambda k: k['timeToStation']) for bus, arrivals in bus_arrivals.items()}
     # json.dump(r, open("{0}.json".format(line), "w"), indent=1)
 
-def previous_stop(bus, line):
+def previous_stop(bus, line_info):
     next_stop = bus['naptanId']
-    line_direction = line[bus['direction']]
+    line_direction = line_info[bus['direction']]
     next_index = list(line_direction.keys()).index(next_stop)
-    print('{} and stop {}'.format(next_index, line_direction[next_stop]))
-    print('{} and stop {}'.format(next_index-1, list(line_direction.values())[next_index-1]))
     return list(line_direction.values())[next_index-1]
+
+def prepare_geojson(bus, stop):
+    loc = geojson.Point((stop[2], stop[1]))
+    bus_feature = geojson.Feature(id=bus, geometry=loc, properties=None)
+    return bus_feature
+
+def prepare_event(line):
+    buses = fetch_arrival_predictions(line)
+    bus_place = {}
+    line_info = lookup_line(line)
+    collection = []
+    for bus, bus_stops in buses.items():
+        try:
+            previous = previous_stop(bus_stops[0], line_info)
+            collection.append(prepare_geojson(bus, previous))
+        except Exception as e:
+            print(e)
+    e = {'name' : "Buses",
+        'description' : "buses",
+        'icon' : 'bus',
+        'viewType' : 'LOCATION_AND_TRACK',
+        'events' : [{'timestamp' : 0,
+                    'featureCollection' : geojson.FeatureCollection(collection)}]}
+    utils.post_events('buses', e, 'http://localhost:8080/api')
 
 
 
@@ -82,8 +107,7 @@ def create_table(curs):
             """)
 
 if __name__ == "__main__":
-    test = fetch_arrival_predictions('88')
-    previous_stop(test['LTZ1506'][0], lookup_line('88'))
+    test = prepare_event('88')
     # conn_str = "host=localhost dbname=postgres user=postgres password=dilectic"
     # conn = psycopg2.connect(conn_str)
     # curs = conn.cursor()
