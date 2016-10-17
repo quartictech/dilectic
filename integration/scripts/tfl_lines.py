@@ -36,7 +36,7 @@ def fetch_lines(mode):
     for line in r:
         yield line["name"]
 
-def fetch_arrivals(line):
+def fetch_arrival_predictions(line):
     r = request("/line/{0}/arrivals".format(line))
     for bus in r:
         yield bus
@@ -59,45 +59,50 @@ if __name__ == "__main__":
     curs = conn.cursor()
     create_table(curs)
     lines = fetch_lines("bus")
-    stations = fetch_stations("38")
     old_predictions = {}
+    line_id = "38"
     while True:
         print("Fetching")
         predictions = defaultdict(lambda: defaultdict(list))
         arrivals = []
-        for prediction in fetch_arrivals("38"):
+        for prediction in fetch_arrival_predictions(line_id):
             vehicle_id = prediction["vehicleId"]
-            station_name = prediction["stationName"]
-            predictions[vehicle_id][station_name] = (prediction["direction"], prediction["expectedArrival"], prediction["timestamp"])
+            naptan_id = prediction["naptanId"]
+            predictions[vehicle_id][naptan_id] = {
+                "direction": prediction["direction"],
+                "expectedArrival": prediction["expectedArrival"],
+                "timestamp": prediction["timestamp"],
+                "stationName": prediction["stationName"]
+            }
         for vehicle_id in old_predictions.keys():
             if not vehicle_id in predictions:
-                station_name = next(old_predictions[vehicle_id].keys())
+                station_name = list(old_predictions[vehicle_id].keys())[0]
                 arrival = old_predictions[vehicle_id][naptan_id]
                 arrivals.append({
-                    "lineId": "38",
+                    "lineId": line_id,
                     "vehicleId": vehicle_id,
-                    "stationName": station_name,
-                    "direction": arrival[0],
-                    "lastExpectedArrival": arrival[1],
-                    "lastTimestamp": arrival[2]
+                    "naptanId": naptan_id,
+                    "stationName": arrival["stationName"],
+                    "direction": arrival["direction"],
+                    "lastExpectedArrival": arrival["expectedArrival"],
+                    "lastTimestamp": arrival["timestamp"]
                 })
             else:
-                for station_name in old_predictions[vehicle_id]:
-                    if not station_name in predictions[vehicle_id]:
-                        arrival = old_predictions[vehicle_id][station_name]
+                for naptan_id in old_predictions[vehicle_id]:
+                    if not naptan_id in predictions[vehicle_id]:
+                        arrival = old_predictions[vehicle_id][naptan_id]
                         arrivals.append({
-                        "lineId": "38",
+                        "lineId": line_id,
                         "vehicleId": vehicle_id,
-                        "stationName": station_name,
-                        "direction": arrival[0],
-                        "lastExpectedArrival": arrival[1],
-                        "lastTimestamp": arrival[2]
+                        "naptanId": naptan_id,
+                        "stationName": arrival["stationName"],
+                        "direction": arrival["direction"],
+                        "lastExpectedArrival": arrival["expectedArrival"],
+                        "lastTimestamp": arrival["timestamp"]
                         })
 
         for arrival in arrivals:
-            print(stations[arrival["direction"]].keys())
-            station = stations[arrival["direction"]][arrival["stationName"]]
-            print(station)
+            pprint(arrival)
         old_predictions = predictions
             # curs.execute("INSERT INTO tfl_arrivals(lineId, vehicleId, towards, direction, naptanId, ts, expectedArrival ) VALUES(%s, %s, %s, %s, %s, %s, %s)",
             #     (bus["lineId"], bus["vehicleId"], bus["towards"], bus["direction"], bus["naptanId"], bus["timestamp"], bus["expectedArrival"]))
