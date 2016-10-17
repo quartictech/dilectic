@@ -57,7 +57,6 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"query": "select * from lsoa_2011_london_gen_mhw"
 }'
 
-
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/roads.json
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/parking.json
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/nightlife.json
@@ -66,6 +65,7 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/buildin
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/rail.json
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/tube_query.json
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/residential.json
+curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/residential_land_use.json
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d @json_imports/commercial.json
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
