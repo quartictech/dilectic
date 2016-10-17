@@ -10,7 +10,7 @@ API_ROOT = 'http://localhost:8080/api'
 def prepare_geojson(d):
     loc = d.get('geography')#already geojson
     geom = d.get('geometry')
-    props = {'timestamp' : d['currentUpdateDateTime'],
+    props = {'timestamp' : d.get('currentUpdateDateTime', None),
             'location' : d['location'],
             'severity' : d['severity'],
             'category' : d['category'],
@@ -31,7 +31,7 @@ def prepare_events(disruptions):
     events = []
     for d in disruptions:
         event = {
-            'timestamp' : d['currentUpdateDateTime'],
+            'timestamp' : d.get('currentUpdateDateTime', None),
             'featureCollection' : prepare_geojson(d)
         }
         events.append(event)
