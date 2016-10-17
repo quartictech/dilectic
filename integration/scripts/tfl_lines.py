@@ -31,10 +31,22 @@ def request(path, **kwargs):
     r = requests.get("https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY))
     return r.json()
 
-def fetch_lines(mode):
-    r = request("/line/mode/{0}".format(mode))
-    for line in r:
-        yield line["name"]
+def lookup_station(station_id, station_locs={}):
+    if station_id not in stations_locs.keys():
+        r = request("/StopPoint/{}".format(station_id))
+        station_locs[station_id] = (r['lat'], r['lon'])
+    return station_locs[station_id]
+
+def lookup_line(line_id):
+    stops_direction = {}
+    for direction in ['inbound', 'outbound']:
+        r = request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
+        stop_points =  r['stopPointSequences'][0]
+        stops = []
+        for stop in stop_points['stopPoint']:
+            stops.append((stop['id'], stop['name'], stop['lat'], stop['lon']))
+        stops_direction[direction] = stops
+    return stops_direction
 
 def fetch_arrival_predictions(line):
     r = request("/line/{0}/arrivals".format(line))
@@ -58,9 +70,8 @@ if __name__ == "__main__":
     conn = psycopg2.connect(conn_str)
     curs = conn.cursor()
     create_table(curs)
-    lines = fetch_lines("bus")
     old_predictions = {}
-    line_id = "38"
+    line_id = "88"
     while True:
         print("Fetching")
         predictions = defaultdict(lambda: defaultdict(list))
