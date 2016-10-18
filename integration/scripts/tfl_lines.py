@@ -93,27 +93,24 @@ def get_position(current, next_pos, proportion):
 
 def time_to_station(bus_arrivals, time_to_dest):
     for bus_id, bus_arrival in bus_arrivals.items():
-        if bus_id in time_to_dest.keys():
-            if time_to_dest[bus_id] <= bus_arrival['timeToStation']:
-                time_to_dest[bus_id] = bus_arrival['timeToStation']
-            else:
-                continue
-        else:
-            time_to_dest[bus_id] = bus_arrival['timeToStation']
+        new_prediction = bus_arrival['timeToStation']
+        if (bus_id not in time_to_dest.keys()) or (time_to_dest[bus_id] <= new_prediction):
+            time_to_dest[bus_id] = new_prediction
     return time_to_dest
 
 def estimate_to_station(bus_arrivals, eta, dt):
     for bus_id, bus_arrival in bus_arrivals.items():
+        new_prediction = bus_arrival['timeToStation']
         if bus_id in eta.keys():
-            if eta[bus_id] > bus_arrival['timeToStation']:
-                eta[bus_id] = bus_arrival['timeToStation']
+            if eta[bus_id] > new_prediction:
+                eta[bus_id] = new_prediction
             else:
                 if eta[bus_id] > dt:
                     eta[bus_id] = eta[bus_id] - dt
                 else:
                     eta[bus_id] = 0
         else:
-            eta[bus_id] = bus_arrival['timeToStation']
+            eta[bus_id] = new_prediction
     return eta
 
 
