@@ -126,92 +126,34 @@ def prepare_event(line, time_to_dest, eta, path):
     line_info = lookup_line(line)
     collection = []
     for bus, bus_stops in buses.items():
-        previous = previous_stop(bus_stops[0], line_info)
-        current = current_stop(bus_stops[0], line_info)
-        proportion = eta[bus]/time_to_dest[bus]
-        pos = get_position(current, previous, proportion)
-        pos = path.interpolate(path.project(pos, normalized=True))#attempt to get it on the line
-        collection.append(prepare_geojson(bus, pos))
+        try:
+            previous = previous_stop(bus_stops[0], line_info)
+            current = current_stop(bus_stops[0], line_info)
+            proportion = eta[bus]/time_to_dest[bus]
+            pos = get_position(current, previous, proportion)
+            # pos = path.interpolate(path.project(pos, normalized=True))#attempt to get it on the line
+            collection.append(prepare_geojson(bus, pos))
+        except Exception as e:
+            print(e)
+
     e = {'name' : "Buses",
         'description' : "buses",
         'icon' : 'bus',
         'attribution' : 'TfL',
-        'viewType' : 'LOCATION_AND_TRACK',
+        'viewType' : 'MOST_RECENT',
         'events' : [{'timestamp' : 0,
                     'featureCollection' : geojson.FeatureCollection(collection)}]}
     utils.post_events('buses', e, 'http://localhost:8080/api')
 
-def create_table(curs):
-    curs.execute("""
-        CREATE TABLE IF NOT EXISTS tfl_arrivals(
-            lineId VARCHAR,
-            vehicleId VARCHAR,
-            lastTimestamp TIMESTAMP,
-            lastExpectedArrival TIMESTAMP,
-            direction VARCHAR,
-            naptanId VARCHAR)
-            """)
-
 if __name__ == "__main__":
-    path = lookup_line_path(88, 'inbound')
+    LINE_ID = '88'
+
+    path = lookup_line_path(LINE_ID, 'inbound')
     time_to_dest = {}#tracks total time to next dest
     eta = {}#tracks estimated time to next dest
     dt=5
     while True:
-        time_to_dest = time_to_station('88', time_to_dest)
-        eta = estimate_to_station('88', eta, dt)
-        prepare_event('88', time_to_dest, eta, path)
+        time_to_dest = time_to_station(LINE_ID, time_to_dest)
+        eta = estimate_to_station(LINE_ID, eta, dt)
+        prepare_event(LINE_ID, time_to_dest, eta, path)
         time.sleep(dt)
-    # conn_str = "host=localhost dbname=postgres user=postgres password=dilectic"
-    # conn = psycopg2.connect(conn_str)
-    # curs = conn.cursor()
-    # create_table(curs)
-    # old_predictions = {}
-    # line_id = "88"
-    # while True:
-    #     print("Fetching")
-    #     predictions = defaultdict(lambda: defaultdict(list))
-    #     arrivals = []
-    #     for prediction in fetch_arrival_predictions(line_id):
-    #         vehicle_id = prediction["vehicleId"]
-    #         naptan_id = prediction["naptanId"]
-    #         predictions[vehicle_id][naptan_id] = {
-    #             "direction": prediction["direction"],
-    #             "expectedArrival": prediction["expectedArrival"],
-    #             "timestamp": prediction["timestamp"],
-    #             "stationName": prediction["stationName"]
-    #         }
-    #     for vehicle_id in old_predictions.keys():
-    #         if not vehicle_id in predictions:
-    #             station_name = list(old_predictions[vehicle_id].keys())[0]
-    #             arrival = old_predictions[vehicle_id][naptan_id]
-    #             arrivals.append({
-    #                 "lineId": line_id,
-    #                 "vehicleId": vehicle_id,
-    #                 "naptanId": naptan_id,
-    #                 "stationName": arrival["stationName"],
-    #                 "direction": arrival["direction"],
-    #                 "lastExpectedArrival": arrival["expectedArrival"],
-    #                 "lastTimestamp": arrival["timestamp"]
-    #             })
-    #         else:
-    #             for naptan_id in old_predictions[vehicle_id]:
-    #                 if not naptan_id in predictions[vehicle_id]:
-    #                     arrival = old_predictions[vehicle_id][naptan_id]
-    #                     arrivals.append({
-    #                     "lineId": line_id,
-    #                     "vehicleId": vehicle_id,
-    #                     "naptanId": naptan_id,
-    #                     "stationName": arrival["stationName"],
-    #                     "direction": arrival["direction"],
-    #                     "lastExpectedArrival": arrival["expectedArrival"],
-    #                     "lastTimestamp": arrival["timestamp"]
-    #                     })
-    #
-    #     for arrival in arrivals:
-    #         pprint(arrival)
-    #     old_predictions = predictions
-    #         # curs.execute("INSERT INTO tfl_arrivals(lineId, vehicleId, towards, direction, naptanId, ts, expectedArrival ) VALUES(%s, %s, %s, %s, %s, %s, %s)",
-    #         #     (bus["lineId"], bus["vehicleId"], bus["towards"], bus["direction"], bus["naptanId"], bus["timestamp"], bus["expectedArrival"]))
-    #     conn.commit()
-    #     time.sleep(2)
