@@ -44,6 +44,12 @@ def lookup_station(station_id, station_locs={}):
         station_locs[station_id] = (r['lat'], r['lon'])
     return station_locs[station_id]
 
+def lookup_line_path(line_id, direction):
+    r = request("/Line/{}/Route/Sequence/{}".format(line_id, direction))
+    assert len(r['lineStrings']) == 1
+    assert len(json.loads(r['lineStrings'][0])) == 1
+    return LineString(json.loads(r['lineStrings'][0])[0])
+
 def lookup_line(line_id):
     stops_direction = {}
     for direction in ['inbound', 'outbound']:
@@ -114,20 +120,18 @@ def estimate_to_station(line, eta, dt):
     return eta
 
 
-def prepare_event(line, time_to_dest, eta):
+def prepare_event(line, time_to_dest, eta, path):
     buses = fetch_arrival_predictions(line)
     bus_place = {}
     line_info = lookup_line(line)
     collection = []
     for bus, bus_stops in buses.items():
-        try:
-            previous = previous_stop(bus_stops[0], line_info)
-            current = current_stop(bus_stops[0], line_info)
-            proportion = eta[bus]/time_to_dest[bus]
-            pos = get_position(current, previous, proportion)
-            collection.append(prepare_geojson(bus, pos))
-        except Exception as e:
-            print(e)
+        previous = previous_stop(bus_stops[0], line_info)
+        current = current_stop(bus_stops[0], line_info)
+        proportion = eta[bus]/time_to_dest[bus]
+        pos = get_position(current, previous, proportion)
+        pos = path.interpolate(path.project(pos, normalized=True))#attempt to get it on the line
+        collection.append(prepare_geojson(bus, pos))
     e = {'name' : "Buses",
         'description' : "buses",
         'icon' : 'bus',
@@ -149,13 +153,14 @@ def create_table(curs):
             """)
 
 if __name__ == "__main__":
+    path = lookup_line_path(88, 'inbound')
     time_to_dest = {}#tracks total time to next dest
     eta = {}#tracks estimated time to next dest
     dt=5
     while True:
         time_to_dest = time_to_station('88', time_to_dest)
         eta = estimate_to_station('88', eta, dt)
-        prepare_event('88', time_to_dest, eta)
+        prepare_event('88', time_to_dest, eta, path)
         time.sleep(dt)
     # conn_str = "host=localhost dbname=postgres user=postgres password=dilectic"
     # conn = psycopg2.connect(conn_str)
