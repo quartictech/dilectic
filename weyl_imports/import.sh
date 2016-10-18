@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo $DIR
 
 CONTEXT_PATH=""
 if [ "$#" -eq 1  ]; then
@@ -7,6 +9,9 @@ fi
 
 API_ROOT=http://localhost:8080${CONTEXT_PATH}/api
 IMPORT_API=$API_ROOT/import/postgres
+
+source $DIR/../integration/env/bin/activate
+python $DIR/../integration/scripts/disruptions_api.py
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"name": "UK Postcodes",
