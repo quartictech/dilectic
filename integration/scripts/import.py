@@ -14,7 +14,9 @@ from jamcams import fill_jamcams
 from net_migration_borough import fill_migration_borough_table
 import os.path
 
-db = DBMake()
+db = DBMake(
+        break
+)
 
 db.table('jamcams',
     create="""CREATE TABLE IF NOT EXISTS jamcams (
@@ -29,6 +31,15 @@ db.table('jamcams',
         )""",
         fill=fill_jamcams)
 
+db.table('nino_registration_boroughs',
+    create="""CREATE TABLE IF NOT EXISTS nino_registration_boroughs (
+        BoroughCode VARCHAR,
+        Borough VARCHAR,
+        France JSON
+    )""",
+    fill=fill_ni_borough_table,
+    direct=True)
+    
 db.table('migration_boroughs',
     create="""CREATE TABLE IF NOT EXISTS migration_boroughs (
         BoroughCode VARCHAR,
