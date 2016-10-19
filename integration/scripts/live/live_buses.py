@@ -123,7 +123,7 @@ def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
             current = current_stop(bus_arrival, line_info)
             proportion = eta[bus_id] / time_to_dest[bus_id]
             pos = get_position(current, previous, proportion)
-            # pos = path.interpolate(path.project(pos, normalized=True))#attempt to get it on the line
+            pos = path.interpolate(path.project(pos, normalized=True),normalized=True)#attempt to get it on the line
             collection.append(prepare_geojson(bus_id, pos))
         except Exception as e:
             print(e)
@@ -137,11 +137,27 @@ def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
                     'featureCollection' : geojson.FeatureCollection(collection)}]}
     utils.post_events('buses', e, 'http://localhost:8080/api')
 
+def post_line_test(line):
+    API_ROOT='http://localhost:8080/api'
+    test = {'name' : 'busroute',
+        'description' : 'buses are noob',
+        'data' : geojson.FeatureCollection([geojson.Feature(id='test123', geometry=line)])
+        }
+    pprint(test)
+    r = requests.put("{}/import/geojson".format(API_ROOT), json=test)
+    return r
+
+
+
+
 if __name__ == "__main__":
     LINE_ID = '88'
 
     line_info = lookup_line(LINE_ID)
     path = lookup_line_path(LINE_ID, 'inbound')
+    # post_line_test(path)
+    # import sys
+    # sys.exit()
     time_to_dest = {}#tracks total time to next dest
     eta = {}#tracks estimated time to next dest
     dt=5
