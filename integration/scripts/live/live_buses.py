@@ -93,10 +93,6 @@ def current_stops(bus_arrivals, line_info, current):
             current[bus_id] = current_stop(bus_arrival, line_info)
     return current
 
-def prepare_geojson(bus_id, pos):
-    bus_feature = geojson.Feature(id=bus_id, geometry=pos, properties={'registration':bus_id})
-    return bus_feature
-
 def get_position(current, next_pos, proportion):
     segment = LineString(((current[2], current[1]), (next_pos[2], next_pos[1])))
     return segment.interpolate(distance=proportion, normalized=True)
@@ -126,6 +122,12 @@ def estimate_to_station(bus_arrivals, next_stop, line_info, eta, interpol_dt):
             eta[bus_id] = new_prediction
     return eta
 
+def prepare_geojson(line_id, bus_id, pos):
+    bus_feature = geojson.Feature(id=bus_id, geometry=pos, properties={
+        'vehicle id': bus_id,
+        'route': line_id
+    })
+    return bus_feature
 
 def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
     collection = []
@@ -139,7 +141,7 @@ def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
 
                 pos = get_position(current, previous, proportion)
                 pos = path[line_id].interpolate(path[line_id].project(pos, normalized=True),normalized=True)#attempt to get it on the line
-                collection.append(prepare_geojson(bus_id, pos))
+                collection.append(prepare_geojson(line_id, bus_id, pos))
             except Exception as e:
                 print(e)
 
