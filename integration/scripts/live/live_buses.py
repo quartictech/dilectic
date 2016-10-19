@@ -112,13 +112,12 @@ def time_to_station(bus_arrivals, time_to_dest):
 def estimate_to_station(bus_arrivals, next_stop, line, eta, interpol_dt):
     for bus_id, bus_arrival in bus_arrivals.items():
         new_prediction = bus_arrival['timeToStation']
-        print(bus_id, next_stop[bus_id], current_stop(bus_arrival, line_info))
+        #print(bus_id, next_stop[bus_id], current_stop(bus_arrival, line_info))
         if bus_id in eta.keys():
             if eta[bus_id] > new_prediction:
                 eta[bus_id] = new_prediction
             elif (eta[bus_id] < new_prediction and
             next_stop[bus_id] != current_stop(bus_arrival, line_info)):
-                print('updating')
                 eta[bus_id] = new_prediction
             elif eta[bus_id] > interpol_dt:
                 eta[bus_id] = eta[bus_id] - interpol_dt
@@ -126,7 +125,7 @@ def estimate_to_station(bus_arrivals, next_stop, line, eta, interpol_dt):
                 eta[bus_id] = 0
         else:
             eta[bus_id] = new_prediction
-        return eta
+    return eta
 
 
 def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
@@ -140,10 +139,9 @@ def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
             pos = get_position(current, previous, proportion)
             pos = path.interpolate(path.project(pos, normalized=True),normalized=True)#attempt to get it on the line
             collection.append(prepare_geojson(bus_id, pos))
-            print(bus_id, eta[bus_id], bus_arrival['timeToStation'], time_to_dest[bus_id])
+            #print(bus_id, eta[bus_id], bus_arrival['timeToStation'], time_to_dest[bus_id])
         except Exception as e:
             print(e)
-        break
 
     e = {'name' : "Buses",
         'description' : "buses",
@@ -164,12 +162,8 @@ def post_line_test(line):
     r = requests.put("{}/import/geojson".format(API_ROOT), json=test)
     return r
 
-
-
-
 if __name__ == "__main__":
     LINE_ID = '88'
-
     line_info = lookup_line(LINE_ID)
     path = lookup_line_path(LINE_ID, 'inbound')
     time_to_dest = {}#tracks total time to next dest
