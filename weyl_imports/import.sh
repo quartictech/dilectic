@@ -86,3 +86,5 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"description": "Local Authority Green Belt Boundaries 2014-2015",
 	"query": "SELECT gb_name as name, area_ha, perim_km, la_name, year, ST_Force_2d(geom) as geom from local_authority_green_belt_boundaries_2014_15"
 }'
+
+curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/signkick.json
