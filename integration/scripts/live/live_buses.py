@@ -171,10 +171,10 @@ if __name__ == "__main__":
     eta = {}#tracks estimated time to next dest
     going_towards = {}
     going_towards = current_stops(bus_arrivals, line_info, going_towards)
-    interpol_dt = 0.5
-    api_dt = 5
+    interpol_dt = 2
+    api_dt = 6
     while True:
-        if api_dt == 5:
+        if api_dt == 6:
             bus_arrivals = fetch_arrival_predictions(LINE_ID)
             time_to_dest = time_to_station(bus_arrivals, time_to_dest)
             api_dt = 0
