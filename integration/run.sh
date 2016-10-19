@@ -10,3 +10,4 @@ docker_run() {
 docker_run 0-from-raw.sh
 docker_run 1-dump-osm-to-sql.sh
 docker_run 2-import-postgres.sh
+docker_run 3-import-geojson.sh
