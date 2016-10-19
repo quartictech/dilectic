@@ -109,10 +109,9 @@ def time_to_station(bus_arrivals, time_to_dest):
             time_to_dest[bus_id] = new_prediction
     return time_to_dest
 
-def estimate_to_station(bus_arrivals, next_stop, line, eta, interpol_dt):
+def estimate_to_station(bus_arrivals, next_stop, line_info, eta, interpol_dt):
     for bus_id, bus_arrival in bus_arrivals.items():
         new_prediction = bus_arrival['timeToStation']
-        #print(bus_id, next_stop[bus_id], current_stop(bus_arrival, line_info))
         if bus_id in eta.keys():
             if eta[bus_id] > new_prediction:
                 eta[bus_id] = new_prediction
@@ -128,20 +127,21 @@ def estimate_to_station(bus_arrivals, next_stop, line, eta, interpol_dt):
     return eta
 
 
-def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
-    bus_place = {}
+def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
     collection = []
-    for bus_id, bus_arrival in bus_arrivals.items():
-        try:
-            previous = previous_stop(bus_arrival, line_info)
-            current = current_stop(bus_arrival, line_info)
-            proportion = eta[bus_id] / time_to_dest[bus_id]
-            pos = get_position(current, previous, proportion)
-            pos = path.interpolate(path.project(pos, normalized=True),normalized=True)#attempt to get it on the line
-            collection.append(prepare_geojson(bus_id, pos))
-            #print(bus_id, eta[bus_id], bus_arrival['timeToStation'], time_to_dest[bus_id])
-        except Exception as e:
-            print(e)
+
+    for line_id in line_ids:
+        for bus_id, bus_arrival in bus_arrivals[line_id].items():
+            try:
+                previous = previous_stop(bus_arrival, line_info[line_id])
+                current = current_stop(bus_arrival, line_info[line_id])
+                proportion = eta[line_id][bus_id] / time_to_dest[line_id][bus_id]
+
+                pos = get_position(current, previous, proportion)
+                pos = path[line_id].interpolate(path[line_id].project(pos, normalized=True),normalized=True)#attempt to get it on the line
+                collection.append(prepare_geojson(bus_id, pos))
+            except Exception as e:
+                print(e)
 
     e = {'name' : "Buses",
         'description' : "buses",
@@ -152,34 +152,38 @@ def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
                     'featureCollection' : geojson.FeatureCollection(collection)}]}
     utils.post_events('buses', e, 'http://localhost:8080/api')
 
-def post_line_test(line):
-    API_ROOT='http://localhost:8080/api'
-    test = {'name' : 'busroute',
-        'description' : 'buses are noob',
-        'data' : geojson.FeatureCollection([geojson.Feature(id='test123', geometry=line)])
-        }
-    pprint(test)
-    r = requests.put("{}/import/geojson".format(API_ROOT), json=test)
-    return r
-
 if __name__ == "__main__":
-    LINE_ID = '88'
-    line_info = lookup_line(LINE_ID)
-    path = lookup_line_path(LINE_ID, 'inbound')
-    time_to_dest = {}#tracks total time to next dest
-    bus_arrivals = fetch_arrival_predictions(LINE_ID)
-    eta = {}#tracks estimated time to next dest
+    API_DT = 10
+    ANIMATION_DT = 3
+    LINE_IDS = ['88', '15', '9']
+
+    line_info = {}
+    path = {}
+    bus_arrivals = {}
     going_towards = {}
-    going_towards = current_stops(bus_arrivals, line_info, going_towards)
-    interpol_dt = 2
-    api_dt = 6
+    eta = {}
+    time_to_dest = {}
+    for line_id in LINE_IDS:
+        line_info[line_id] = lookup_line(line_id)
+        path[line_id] = lookup_line_path(line_id, 'inbound')
+        bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
+        going_towards[line_id] = current_stops(bus_arrivals[line_id], line_info[line_id], {})
+        eta[line_id] = {}#tracks estimated time to next dest
+        time_to_dest[line_id] = {} #tracks total time to next dest
+
+    t = 0
     while True:
-        if api_dt == 6:
-            bus_arrivals = fetch_arrival_predictions(LINE_ID)
-            time_to_dest = time_to_station(bus_arrivals, time_to_dest)
-            api_dt = 0
-        eta = estimate_to_station(bus_arrivals, going_towards, line_info, eta, interpol_dt)
-        going_towards = current_stops(bus_arrivals, line_info, going_towards)
-        prepare_event(line_info, bus_arrivals, time_to_dest, eta, path)
-        api_dt += interpol_dt
-        time.sleep(interpol_dt)
+        if t >= API_DT:
+            t -= API_DT
+            for line_id in LINE_IDS:
+                bus_arrivals[line_id] = fetch_arrival_predictions(line_id)
+                time_to_dest[line_id] = time_to_station(bus_arrivals[line_id], time_to_dest[line_id])
+
+        for line_id in LINE_IDS:
+            eta[line_id] = estimate_to_station(bus_arrivals[line_id], going_towards[line_id], line_info[line_id], eta[line_id], ANIMATION_DT)
+            going_towards[line_id] = current_stops(bus_arrivals[line_id], line_info[line_id], going_towards[line_id])
+
+        prepare_event(LINE_IDS, line_info, bus_arrivals, time_to_dest, eta, path)
+
+        t += ANIMATION_DT
+        time.sleep(ANIMATION_DT)
