@@ -91,3 +91,9 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"description": "Local Authority Green Belt Boundaries 2014-2015",
 	"query": "SELECT gb_name as name, area_ha, perim_km, la_name, year, ST_Force_2d(geom) as geom from local_authority_green_belt_boundaries_2014_15"
 }'
+
+curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
+        "name": "London Boroughs (NI Number Applications)",
+        "description": "London Borough Boundaries with NI Number Applications By Country",
+        "query": "SELECT lb.name, lb.geom, lbp.*, mb.*, n.* from london_borough_excluding_mhw lb left join london_borough_profiles lbp on lb.name = lbp.AreaName left join migration_boroughs mb ON lb.name=mb.borough left join nino_registration_boroughs n on n.borough = lbp.AreaName"
+}'
