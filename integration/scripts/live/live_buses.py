@@ -73,6 +73,7 @@ def fetch_arrival_predictions(line):
     return {bus_id: min(arrivals, key=lambda k: k['timeToStation']) for bus_id, arrivals in bus_arrivals.items()}
 
 def previous_stop(bus_arrival, line_info):
+    """Returns the previous stop to the current stop for the line."""
     next_stop = bus_arrival['naptanId']
     line_direction = line_info[bus_arrival['direction']]
     next_index = list(line_direction.keys()).index(next_stop)
@@ -81,7 +82,16 @@ def previous_stop(bus_arrival, line_info):
 def current_stop(bus_arrival, line_info):
     current_stop = bus_arrival['naptanId']
     line_direction = line_info[bus_arrival['direction']]
-    return line_direction[current_stop]
+    try:
+        return line_direction[current_stop]
+    except KeyError as e:
+        print(e, line_direction)
+        return None
+
+def current_stops(bus_arrivals, line_info, current):
+    for bus_id, bus_arrival in bus_arrivals.items():
+            current[bus_id] = current_stop(bus_arrival, line_info)
+    return current
 
 def prepare_geojson(bus_id, pos):
     bus_feature = geojson.Feature(id=bus_id, geometry=pos, properties={'registration':bus_id})
@@ -92,26 +102,31 @@ def get_position(current, next_pos, proportion):
     return segment.interpolate(distance=proportion, normalized=True)
 
 def time_to_station(bus_arrivals, time_to_dest):
+    """Returns total time estimated to next stop for each bus ID."""
     for bus_id, bus_arrival in bus_arrivals.items():
         new_prediction = bus_arrival['timeToStation']
         if (bus_id not in time_to_dest.keys()) or (time_to_dest[bus_id] <= new_prediction):
             time_to_dest[bus_id] = new_prediction
     return time_to_dest
 
-def estimate_to_station(bus_arrivals, eta, dt):
+def estimate_to_station(bus_arrivals, next_stop, line, eta, interpol_dt):
     for bus_id, bus_arrival in bus_arrivals.items():
         new_prediction = bus_arrival['timeToStation']
+        print(bus_id, next_stop[bus_id], current_stop(bus_arrival, line_info))
         if bus_id in eta.keys():
             if eta[bus_id] > new_prediction:
                 eta[bus_id] = new_prediction
+            elif (eta[bus_id] < new_prediction and
+            next_stop[bus_id] != current_stop(bus_arrival, line_info)):
+                print('updating')
+                eta[bus_id] = new_prediction
+            elif eta[bus_id] > interpol_dt:
+                eta[bus_id] = eta[bus_id] - interpol_dt
             else:
-                if eta[bus_id] > dt:
-                    eta[bus_id] = eta[bus_id] - dt
-                else:
-                    eta[bus_id] = 0
+                eta[bus_id] = 0
         else:
             eta[bus_id] = new_prediction
-    return eta
+        return eta
 
 
 def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
@@ -125,8 +140,10 @@ def prepare_event(line_info, bus_arrivals, time_to_dest, eta, path):
             pos = get_position(current, previous, proportion)
             pos = path.interpolate(path.project(pos, normalized=True),normalized=True)#attempt to get it on the line
             collection.append(prepare_geojson(bus_id, pos))
+            print(bus_id, eta[bus_id], bus_arrival['timeToStation'], time_to_dest[bus_id])
         except Exception as e:
             print(e)
+        break
 
     e = {'name' : "Buses",
         'description' : "buses",
@@ -155,16 +172,20 @@ if __name__ == "__main__":
 
     line_info = lookup_line(LINE_ID)
     path = lookup_line_path(LINE_ID, 'inbound')
-    # post_line_test(path)
-    # import sys
-    # sys.exit()
     time_to_dest = {}#tracks total time to next dest
+    bus_arrivals = fetch_arrival_predictions(LINE_ID)
     eta = {}#tracks estimated time to next dest
-    dt=5
+    going_towards = {}
+    going_towards = current_stops(bus_arrivals, line_info, going_towards)
+    interpol_dt = 0.5
+    api_dt = 5
     while True:
-        bus_arrivals = fetch_arrival_predictions(LINE_ID)
-        time_to_dest = time_to_station(bus_arrivals, time_to_dest)
-        eta = estimate_to_station(bus_arrivals, eta, dt)
+        if api_dt == 5:
+            bus_arrivals = fetch_arrival_predictions(LINE_ID)
+            time_to_dest = time_to_station(bus_arrivals, time_to_dest)
+            api_dt = 0
+        eta = estimate_to_station(bus_arrivals, going_towards, line_info, eta, interpol_dt)
+        going_towards = current_stops(bus_arrivals, line_info, going_towards)
         prepare_event(line_info, bus_arrivals, time_to_dest, eta, path)
-
-        time.sleep(dt)
+        api_dt += interpol_dt
+        time.sleep(interpol_dt)
