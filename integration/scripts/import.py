@@ -12,11 +12,12 @@ from naptan import fill_naptan
 from crime import fill_crime_table
 from jamcams import fill_jamcams
 from net_migration_borough import fill_migration_borough_table
+from ni_num_registrations import fill_ni_borough_table, get_table_columns
 import os.path
+import sys
 
-db = DBMake(
-        break
-)
+db = DBMake()
+config_file = os.path.join(os.path.dirname(__file__), '../config.yml')
 
 db.table('jamcams',
     create="""CREATE TABLE IF NOT EXISTS jamcams (
@@ -32,14 +33,10 @@ db.table('jamcams',
         fill=fill_jamcams)
 
 db.table('nino_registration_boroughs',
-    create="""CREATE TABLE IF NOT EXISTS nino_registration_boroughs (
-        BoroughCode VARCHAR,
-        Borough VARCHAR,
-        France JSON
-    )""",
+    create="""CREATE TABLE IF NOT EXISTS nino_registration_boroughs ({0})""".format(get_table_columns(config_file)),
     fill=fill_ni_borough_table,
     direct=True)
-    
+
 db.table('migration_boroughs',
     create="""CREATE TABLE IF NOT EXISTS migration_boroughs (
         BoroughCode VARCHAR,
@@ -400,5 +397,4 @@ db.materialized_view('crime_geocoded',
             crime m
             """)
 
-config_file = os.path.join(os.path.dirname(__file__), '../config.yml')
 db.run(config=config_file)
