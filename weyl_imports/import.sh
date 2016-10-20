@@ -11,7 +11,7 @@ API_ROOT=http://localhost:8080${CONTEXT_PATH}/api
 IMPORT_API=$API_ROOT/import/postgres
 
 source $DIR/../integration/env/bin/activate
-python $DIR/../integration/scripts/disruptions_api.py
+python $DIR/../integration/scripts/live/disruptions_api.py
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"name": "UK Postcodes",
@@ -77,7 +77,7 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"name": "Jamcams",
 	"description": "TFL traffic camera feeds",
 	"query": "select * from jamcams_geocoded",
-  "icon": "purple camera"
+  "icon": "camera"
 }'
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
