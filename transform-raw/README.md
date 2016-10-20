@@ -21,3 +21,5 @@
    London price paid data
 - `London National Insurance numbers regisration`
   [here](https://data.london.gov.uk/dataset/national-insurance-number-registrations-overseas-nationals-borough)
+- `GB Road Traffic Counts`
+  [here](https://data.gov.uk/dataset/gb-road-traffic-counts)
