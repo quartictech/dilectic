@@ -10,6 +10,6 @@ def parse_date(s, fmt='%d/%m/%Y'):
     except:
         raise ValueError("Can't parse {} using {}".format(s, fmt))
 
-def post_events(layer, data, API_ROOT):
+def post_events(layer, data, API_ROOT='http://localhost:8080/api'):
     r = requests.post("{}/layer/live/{}".format(API_ROOT, layer), json=data)
     print(r.text)
