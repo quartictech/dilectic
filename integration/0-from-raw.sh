@@ -34,3 +34,6 @@ shp_to_sql Distribution/Sectors.shp postcode_sectors 27700
 unzip $INPUT/crime_data.zip -d $OUTPUT
 unzip $INPUT/ukpostcodes.zip -d $OUTPUT
 
+mkdir -p $OUTPUT/gb-road-traffic-counts
+unzip $INPUT/gb-road-traffic-counts.zip -d $OUTPUT/gb-road-traffic-counts
+unzip $OUTPUT/gb-road-traffic-counts/data/AADF-data-major-roads.zip -d $OUTPUT/gb-road-traffic-counts

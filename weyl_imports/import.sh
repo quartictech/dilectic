@@ -88,3 +88,6 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 }'
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/signkick.json
+
+curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/gb-road-traffic-counts/AADF-data-major-roads.json
+
