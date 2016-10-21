@@ -54,6 +54,8 @@ if __name__ == "__main__":
     output = {
         "name": "Zoopla Properties London",
         "description": "Zoopla Property Listings for London",
+        "icon": "home",
+        "attribution": "Data provided by Zoopla",
         "data": {
             "type": "FeatureCollection",
             "features": features
