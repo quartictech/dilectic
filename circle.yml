@@ -18,4 +18,5 @@ dependencies:
 test:
   override:
     - docker login -e 1234@5678.com -u oauth2accesstoken -p "$(sudo /opt/google-cloud-sdk/bin/gcloud auth print-access-token)" https://eu.gcr.io
+    - psql -U postgres -d postgres -c "CREATE EXTENSION postgis;"
     - cd integration && cp config.yml.example config.yml && ./run.sh $(pwd)/..
