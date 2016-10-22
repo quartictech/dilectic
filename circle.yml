@@ -5,12 +5,15 @@ machine:
 dependencies:
   cache_directories:
     - data/raw
+    - "~/docker"
   override:
     - mkdir -p data/raw data/derived
     - echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
     - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
     - sudo /opt/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT_ID}
     - sudo /opt/google-cloud-sdk/bin/gsutil -m rsync -r gs://quartic-data/raw-data data/raw
+    - docker login -e 1234@5678.com -u oauth2accesstoken -p "$(sudo /opt/google-cloud-sdk/bin/gcloud auth print-access-token)" https://eu.gcr.io
+    - cd integration && ./setup.sh
 
 test:
   override:

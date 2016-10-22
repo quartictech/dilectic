@@ -1,10 +1,9 @@
 #!/bin/bash
 set -eu
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/config.sh
 
 ROOT_DIR=${1}
-
-source $DIR/config.sh
 
 docker_run() {
   echo "Running $1 in docker"
@@ -16,7 +15,7 @@ docker_run() {
     -e "OUTPUT=/derived" \
     -e "INTEGRATION=/integration" \
     -w /work \
-    eu.gcr.io/quartic-oliver/data-worker:0.2.0-9-gd761ec1 \
+    ${DOCKER_IMAGE} \
     /integration/$1
 }
 
