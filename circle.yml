@@ -14,7 +14,9 @@ dependencies:
 
 test:
   override:
-    - echo "Nothing to do right now"
+    - cd integration
+    - cp config.yml.example config.yml
+    - ./run.sh $(pwd)/..
 
 # deployment:
 #   hub:

@@ -16,7 +16,7 @@ docker_run() {
     -e "OUTPUT=/derived" \
     -e "INTEGRATION=/integration" \
     -w /work \
-    quartic/data-worker:0.2.0 \
+    eu.gcr.io/quartic-oliver/data-worker:0.2.0-8-g0450536 \
     /integration/$1
 }
 
