@@ -7,7 +7,10 @@ dependencies:
     - data/raw
   override:
     - mkdir -p data/raw data/derived
-    - docker run --rm -v $(pwd)/data/raw:/data/raw google/cloud-sdk gsutil -m rsync gs://quartic-newyork/raw-data /data/raw
+    - echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+    - sudo /opt/google-cloud-sdk/bin/gcloud config set project ${GCLOUD_PROJECT_ID}
+    - sudo /opt/google-cloud-sdk/bin/gsutil -m rsync gs://quartic-newtork/raw-data data/raw
 
 test:
   override:
