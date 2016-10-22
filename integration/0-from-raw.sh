@@ -26,10 +26,14 @@ unzip -o $INPUT/LSOAs.zip "data/Lower_layer_super_output_areas_(E+W)_2011_Bounda
 unzip -o "data/Lower_layer_super_output_areas_(E+W)_2011_Boundaries_(Full_Extent)_V2.zip"
 shp_to_sql LSOA_2011_EW_BFE_V2.shp lsoa_2011_ew_bfe_v2 27700
 
-unzip $INPUT/UK-postcode-boundaries-Jan-2015.zip
+unzip -o $INPUT/UK-postcode-boundaries-Jan-2015.zip
 shp_to_sql Distribution/Areas.shp postcode_areas 27700
 shp_to_sql Distribution/Districts postcode_districts 27700
 shp_to_sql Distribution/Sectors.shp postcode_sectors 27700
 
 unzip -o $INPUT/crime_data.zip -d $OUTPUT
 unzip -o $INPUT/ukpostcodes.zip -d $OUTPUT
+
+mkdir -p $OUTPUT/gb-road-traffic-counts
+unzip -o $INPUT/gb-road-traffic-counts.zip -d $OUTPUT/gb-road-traffic-counts
+unzip -o $OUTPUT/gb-road-traffic-counts/data/AADF-data-major-roads.zip -d $OUTPUT/gb-road-traffic-counts
