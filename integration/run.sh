@@ -9,10 +9,10 @@ docker_run() {
   echo "Running $1 in docker"
   docker run --rm --net="host" \
     -v ${ROOT_DIR}/integration:/integration \
-    -v ${ROOT_DIR}/data/raw:/raw \
-    -v ${ROOT_DIR}/data/derived:/derived \
-    -e "INPUT=/raw" \
-    -e "OUTPUT=/derived" \
+    -v ${ROOT_DIR}/data/raw:/data/raw \
+    -v ${ROOT_DIR}/data/derived:/data/derived \
+    -e "INPUT=/data/raw" \
+    -e "OUTPUT=/data/derived" \
     -e "INTEGRATION=/integration" \
     -w /work \
     ${DOCKER_IMAGE} \
