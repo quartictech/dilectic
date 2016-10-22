@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-pip3 install -r /home/integration/requirements.txt
+pip3 install -r ${INTEGRATION}/requirements.txt
 
-python3 /home/integration/scripts/billboards.py /home/data/raw/signkick.csv /home/data/derived/signkick.json
-python3 /home/integration/scripts/gb_road_traffic_counts.py /home/data/derived/gb-road-traffic-counts/AADF-data-major-roads.csv /home/data/derived/gb-road-traffic-counts/AADF-data-major-roads.json
+python3 ${INTEGRATION}/scripts/billboards.py ${INPUT}/signkick.csv ${OUTPUT}/signkick.json
+python3 ${INTEGRATION}/scripts/gb_road_traffic_counts.py ${OUTPUT}/gb-road-traffic-counts/AADF-data-major-roads.csv ${OUTPUT}/gb-road-traffic-counts/AADF-data-major-roads.json
