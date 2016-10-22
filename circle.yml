@@ -14,9 +14,7 @@ dependencies:
 
 test:
   override:
-    - cd integration
-    - cp config.yml.example config.yml
-    - ./run.sh $(pwd)/..
+    - cd integration && cp config.yml.example config.yml && ./run.sh $(pwd)/..
 
 # deployment:
 #   hub:
