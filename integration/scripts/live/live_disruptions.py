@@ -3,7 +3,6 @@
 #
 import requests
 import xml.etree.ElementTree as ET
-from utils import parse_date
 import configparser
 
 def read_feed(request):
