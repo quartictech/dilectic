@@ -5,5 +5,5 @@ source $DIR/config.sh
 
 # From https://circleci.com/docs/docker/#caching-docker-layers
 if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
-docker pull ${DOCKER_IMAGE}
+docker run ${DOCKER_IMAGE} echo "Nothing to do"
 mkdir -p ~/docker; docker save ${DOCKER_IMAGE} > ~/docker/image.tar
