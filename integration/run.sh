@@ -1,5 +1,5 @@
 #!/bin/bash
-set -u
+set -eu
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ROOT_DIR=${1}

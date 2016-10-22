@@ -1,4 +1,6 @@
 #!/bin/sh
+set -eu
+
 shp_to_sql() {
     shp2pgsql -s $3 $1 $2 > $OUTPUT/$2.sql
 }
