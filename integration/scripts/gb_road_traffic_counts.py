@@ -22,7 +22,6 @@ def traffic_counts_geojson(path, out_path):
                 if key.startswith("Fd"):
                     counts[row["CP"]][key].append({"timestamp": timestamp, "value": value})
             details[row["CP"]] = {"road": row["Road"], "eastings": row["S Ref E"], "northings": row["S Ref N"]}
-        pprint(details)
 
     for cp, detail in details.items():
         lat_long = transform(bngs, wgs84, float(detail["eastings"]), float(detail["northings"]))

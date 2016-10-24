@@ -1,4 +1,6 @@
 #!/bin/sh
-pip3 install -r /home/integration/requirements.txt
+set -eu
 
-python3 /home/integration/scripts/import.py
+pip3 install -r ${INTEGRATION}/requirements.txt
+
+python3 ${INTEGRATION}/scripts/import.py
