@@ -1,7 +1,7 @@
 {
-	"name": "Other Spaces",
-	"description": "Other buildings and spaces excluding parks and nightlife",
-	"query": "SELECT * from planet_osm_polygon WHERE
+  "name": "Other Spaces",
+  "description": "Other buildings and spaces excluding parks and nightlife",
+  "query": "SELECT * from planet_osm_polygon WHERE
     amenity != 'club'
     AND amenity != 'nightclub'
     AND amenity != 'pub'

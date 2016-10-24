@@ -1,0 +1,5 @@
+{
+  "name": "London Boroughs",
+  "description": "London Borough Boundaries",
+  "query": "SELECT lb.name, lb.geom, lbp.*, mb.* from london_borough_excluding_mhw lb left join london_borough_profiles lbp on lb.name = lbp.AreaName left join migration_boroughs mb ON lb.name=mb.borough"
+}
