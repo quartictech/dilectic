@@ -102,3 +102,4 @@ curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/gb-road-traffic-counts/AADF-data-major-roads.json
 
+curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/zoopla.json
