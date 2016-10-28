@@ -26,7 +26,7 @@ def prepare_geojson(d):
 def prepare_events(disruptions):
     e = {'name' : 'Road Disruptions',
         'description' : 'TfL Road Disruptions',
-        'icon' : 'red car',
+        'icon' : 'car',
         'viewType' : 'LOCATION_AND_TRACK',
         }
     events = []
@@ -46,5 +46,3 @@ if __name__=="__main__":
     disruptions = r.json()
 
     events = prepare_events(disruptions)
-    pprint.pprint(events)
-    post_events('7777', events, API_ROOT)
