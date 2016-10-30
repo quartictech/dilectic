@@ -54,6 +54,7 @@ def unzip(source, dest, files=[], **kwargs):
 
 def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=None, db_config=None, **kwargs):
     def object_exists():
+        logging.error("Checking existence of %s", name)
         with conn.cursor() as curs:
             sql = "SELECT to_regclass('{name}')".format(name=name)
             curs.execute(sql)
@@ -91,9 +92,15 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
                 conn.commit()
 
     def fill_sql_file():
+        if object_exists():
+            logging.error("dropping %s", name)
+            with conn.cursor() as curs:
+                curs.execute("drop table {name} cascade".format(name=name))
+            conn.commit()
+            assert not object_exists()
         env = os.environ.copy()
         env['PGPASSWORD'] = db_config['password']
-        command = "psql -h {db[host]} -U {db[user]} {db[dbname]} < {fname}".format(fname=sql_file, db=db_config)
+        command = "psql -q -h {db[host]} -U {db[user]} {db[dbname]} < {fname}".format(fname=sql_file, db=db_config)
         subprocess.check_call(command, shell=True, env=env)
 
     def fill_table_direct():
@@ -125,6 +132,6 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
         yield _merge_dicts({
             "name": "sql_file",
             "actions": [fill_sql_file],
-            "uptodate": [object_non_empty],
+            "uptodate": [object_exists],
             "file_dep": [sql_file]
         }, kwargs)

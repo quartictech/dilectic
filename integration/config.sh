@@ -1,7 +1,2 @@
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-export RAW_DIR=$DIR/../data/raw
-export DERIVED_DIR=$DIR/../data/derived
-
+export DOCKER_IMAGE=eu.gcr.io/quartic-oliver/data-worker:0.2.0-9-gd761ec1
 export PGPASSWORD=dilectic
-echo $PGPASSWORD

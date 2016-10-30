@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+echo $DIR
 
 CONTEXT_PATH=""
 if [ "$#" -eq 1  ]; then
@@ -7,6 +9,9 @@ fi
 
 API_ROOT=http://localhost:8080${CONTEXT_PATH}/api
 IMPORT_API=$API_ROOT/import/postgres
+
+source $DIR/../integration/env/bin/activate
+python $DIR/../integration/scripts/live/disruptions_api.py
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"name": "UK Postcodes",
@@ -72,7 +77,7 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"name": "Jamcams",
 	"description": "TFL traffic camera feeds",
 	"query": "select * from jamcams_geocoded",
-  "icon": "purple camera"
+  "icon": "camera"
 }'
 
 curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
@@ -87,7 +92,14 @@ curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
 	"query": "SELECT gb_name as name, area_ha, perim_km, la_name, year, ST_Force_2d(geom) as geom from local_authority_green_belt_boundaries_2014_15"
 }'
 
+curl -XPUT -H Content-Type:application/json $IMPORT_API -d '{
+        "name": "London Boroughs (NI Number Applications)",
+        "description": "London Borough Boundaries with NI Number Applications By Country",
+        "query": "SELECT lb.name, lb.geom, lbp.*, mb.*, n.* from london_borough_excluding_mhw lb left join london_borough_profiles lbp on lb.name = lbp.AreaName left join migration_boroughs mb ON lb.name=mb.borough left join nino_registration_boroughs n on n.borough = lbp.AreaName"
+}'
+
 curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/signkick.json
 
 curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/gb-road-traffic-counts/AADF-data-major-roads.json
 
+curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/zoopla.json

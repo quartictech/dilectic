@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=dilectic
 
   weyl:
-    image: registry.gitlab.com/quartic/weyl:0.1.1-51-gcd46d2f 
+    image: registry.gitlab.com/quartic/weyl:0.2.0-7-g012d327
     ports:
       - "8080:8080"
     volumes:

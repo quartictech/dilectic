@@ -29,7 +29,6 @@ def signkick_geojson(path, out_path):
             if row["description"] != "-":
                 feature["properties"]["Description"] = row["description"]
             features.append(feature)
-            print(row)
 
     output = {
         "name": "Outdoor Advertising Stock London",
