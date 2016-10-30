@@ -67,7 +67,7 @@ def process_prices_zip(path):
                         #'E05000085', 'E05000085', 'E09000005', 'Brent']
                         fmt = '%d-%b-%y'
                         values = (
-                        row[1], utils.parse_date(row[2], fmt), re.sub('\\s+', ' ', row[3]), row[5], row[6],
+                        row[1], parse_date(row[2], fmt), re.sub('\\s+', ' ', row[3]), row[5], row[6],
                         row[7], "", "", row[8], row[9],#addr is 2 lines shorter - insert blank
                         row[10], row[11], row[12], row[13])
                     except Exception as e:
