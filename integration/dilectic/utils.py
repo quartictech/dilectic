@@ -70,4 +70,5 @@ class IntegrationTaskLoader(TaskLoader):
             task_list.extend(loader.load_tasks(members, self.cmd_names, cmd.execute_tasks))
         doit_config = loader.load_doit_config(members)
         doit_config["dep_file"] = self._config.dep_file
+        doit_config["verbosity"] = 2
         return task_list, doit_config

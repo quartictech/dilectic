@@ -54,7 +54,7 @@ def unzip(source, dest, files=[], **kwargs):
 
 def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=None, db_config=None, **kwargs):
     def object_exists():
-        logging.error("Checking existence of %s", name)
+        logging.info("Checking existence of %s", name)
         with conn.cursor() as curs:
             sql = "SELECT to_regclass('{name}')".format(name=name)
             curs.execute(sql)
@@ -67,16 +67,12 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
             return curs.fetchone()[0] > 0
 
     def create_object():
-        if create:
-            with conn.cursor() as curs:
-                curs.execute(create)
-                conn.commit()
-        elif sql_file:
-            fill_sql_file()
-        else:
-            raise Exception("must specify either create or sql_file")
+        with conn.cursor() as curs:
+            curs.execute(create)
+            conn.commit()
 
     def fill_table():
+        logging.info("creating table %s", name)
         with conn.cursor() as curs:
             with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tmp_file:
                 writer = csv.writer(tmp_file, delimiter='\t')
@@ -93,11 +89,12 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
 
     def fill_sql_file():
         if object_exists():
-            logging.error("dropping %s", name)
+            logging.info("dropping %s", name)
             with conn.cursor() as curs:
                 curs.execute("drop table {name} cascade".format(name=name))
             conn.commit()
             assert not object_exists()
+        logging.info("creating table %s from sql file: %s", name, sql_file)
         env = os.environ.copy()
         env['PGPASSWORD'] = db_config['password']
         command = "psql -q -h {db[host]} -U {db[user]} {db[dbname]} < {fname}".format(fname=sql_file, db=db_config)
@@ -108,11 +105,12 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
             fill_direct(curs)
         conn.commit()
 
-    yield _merge_dicts({
-        "name": "create",
-        "actions": [create_object],
-        "uptodate": [object_exists]
-    }, kwargs)
+    if create:
+        yield _merge_dicts({
+            "name": "create",
+            "actions": [create_object],
+            "uptodate": [object_exists]
+        }, kwargs)
 
     if fill:
         yield _merge_dicts({
