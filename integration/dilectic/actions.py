@@ -3,6 +3,7 @@ import shlex
 import tempfile
 import csv
 import logging
+import subprocess
 
 def _merge_dicts(a, b):
     d = a.copy()
@@ -51,7 +52,7 @@ def unzip(source, dest, files=[], **kwargs):
         "targets": [os.path.join(dest, f) for f in files]
         }, kwargs)
 
-def db_create(conn, name, create, fill=None, check_non_empty=True, **kwargs):
+def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=None, db_config=None, **kwargs):
     def object_exists():
         with conn.cursor() as curs:
             sql = "SELECT to_regclass('{name}')".format(name=name)
@@ -65,9 +66,14 @@ def db_create(conn, name, create, fill=None, check_non_empty=True, **kwargs):
             return curs.fetchone()[0] > 0
 
     def create_object():
-        with conn.cursor() as curs:
-            curs.execute(create)
-            conn.commit()
+        if create:
+            with conn.cursor() as curs:
+                curs.execute(create)
+                conn.commit()
+        elif sql_file:
+            fill_sql_file()
+        else:
+            raise Exception("must specify either create or sql_file")
 
     def fill_table():
         with conn.cursor() as curs:
@@ -84,6 +90,17 @@ def db_create(conn, name, create, fill=None, check_non_empty=True, **kwargs):
                     curs.copy_from(tmp_file, name, null='')
                 conn.commit()
 
+    def fill_sql_file():
+        env = os.environ.copy()
+        env['PGPASSWORD'] = db_config['password']
+        command = "psql -h {db[host]} -U {db[user]} {db[dbname]} < {fname}".format(fname=sql_file, db=db_config)
+        subprocess.check_call(command, shell=True, env=env)
+
+    def fill_table_direct():
+        with conn.cursor() as curs:
+            fill_direct(curs)
+        conn.commit()
+
     yield _merge_dicts({
         "name": "create",
         "actions": [create_object],
@@ -95,4 +112,19 @@ def db_create(conn, name, create, fill=None, check_non_empty=True, **kwargs):
             "name": "fill",
             "actions": [fill_table],
             "uptodate": [object_non_empty]
+        }, kwargs)
+
+    if fill_direct:
+        yield _merge_dicts({
+            "name": "fill_direct",
+            "actions": [fill_table_direct],
+            "uptodate": [object_non_empty]
+        }, kwargs)
+
+    if sql_file:
+        yield _merge_dicts({
+            "name": "sql_file",
+            "actions": [fill_sql_file],
+            "uptodate": [object_non_empty],
+            "file_dep": [sql_file]
         }, kwargs)

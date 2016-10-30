@@ -7,4 +7,4 @@ docker_run() {
  docker run -w /home/integration --net="host" -v $DIR:/home/integration -v $DERIVED_DIR:/home/data/derived -v $RAW_DIR:/home/data/raw data-integration $1
 }
 
-docker_run "python3 /home/integration/dodo.py"
+docker_run "python3 /home/integration/run.py"

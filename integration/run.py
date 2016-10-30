@@ -9,8 +9,29 @@ cfg = Config(config_file)
 if __name__ == "__main__":
     import integrations.jamcams
     import integrations.preprocess
+    import integrations.migration
+    import integrations.boroughs
+    import integrations.companies
+    import integrations.mcdonalds
+    import integrations.tube
+    import integrations.public_land_assets
+    import integrations.postcodes
+    import integrations.london_price_houses
+    import integrations.crime
+    import integrations.boundaries
+
     task_loader = IntegrationTaskLoader(cfg,
-        integrations.jamcams,
         integrations.preprocess,
+        integrations.jamcams,
+        integrations.migration,
+        integrations.boroughs,
+        integrations.companies,
+        integrations.mcdonalds,
+        integrations.tube,
+        integrations.public_land_assets,
+        integrations.postcodes,
+        integrations.london_price_houses,
+        integrations.crime,
+        integrations.boundaries
     )
     sys.exit(DoitMain(task_loader).run(sys.argv[1:]))

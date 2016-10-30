@@ -16,6 +16,9 @@ RUN python setup.py install
 
 RUN apt-get install -y catdoc
 
+COPY requirements.txt /home
+RUN pip3 install -r /home/requirements.txt
+
 
 VOLUME ["/home/data/raw", "home/data/out"]
 

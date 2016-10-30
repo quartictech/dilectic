@@ -1,6 +1,7 @@
 from xlrd import open_workbook
 import os.path
-
+from dilectic.utils import *
+from dilectic.actions import *
 
 def process_gva_sheet(s):
     years = [int(v.value) for v in s.row(0)[3:]]
@@ -65,8 +66,10 @@ def process_workbook(wb):
     table['headers'] = headers
     return table
 
-def gva_gdhi_to_pg(data_dir):
-        wb = open_workbook(os.path.join(data_dir, 'raw', 'GVA-GDHI-nuts3-regions-uk.xls'))
+@task
+def london_gva_gdhi(cfg):
+    def gva_gdhi_to_pg():
+        wb = open_workbook(os.path.join(cfg.raw_dir, 'GVA-GDHI-nuts3-regions-uk.xls'))
         table = process_workbook(wb)
         table.pop('headers')
         for k, v in table.items():
@@ -75,3 +78,15 @@ def gva_gdhi_to_pg(data_dir):
                 continue
             else:
                 yield v
+    return db_create(cfg.db(), 'london_gva_gdhi',
+        create="""CREATE TABLE IF NOT EXISTS london_gva_gdhi (
+            UKI VARCHAR,
+            Year INT,
+            AreaName VARCHAR,
+            GVA INT,
+            GVAPerHead INT,
+            PerHeadIndices INT,
+            GrossDisposableHouse INT,
+            GDHIPerHead INT)
+        """,
+        fill=gva_gdhi_to_pg)

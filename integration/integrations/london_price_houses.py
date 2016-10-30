@@ -2,9 +2,11 @@ from zipfile import ZipFile, BadZipFile
 import os.path
 import csv
 import codecs
-import utils
 import subprocess
 import re
+
+from dilectic.utils import *
+from dilectic.actions import *
 
 def fix_zip_file(path):
     #zip file they provide is fucked so we fix it.
@@ -14,13 +16,12 @@ def fix_zip_file(path):
         path = path + '.fix'
     return path
 
-
 def process_prices_zip(path):
     path = fix_zip_file(path)
     with ZipFile(path) as z:
         for f in z.namelist():
             print('Processing {}'.format(f))
-            f = codecs.iterdecode(z.open(f), 'utf-8', errors='ignore')
+            f = codecs.iterdecode(z.open(f), 'utf-7', errors='ignore')
             rdr = csv.reader(f)
             count = 0
             next(rdr)
@@ -46,7 +47,7 @@ def process_prices_zip(path):
                         #'E01000273', 'E00001314']
                         fmt = '%d/%m/%Y %H:%M'
                         values = (
-                        row[2], utils.parse_date(row[3], fmt), re.sub('\\s+', ' ', row[8]), row[9], row[10],
+                        row[2], parse_date(row[3], fmt), re.sub('\\s+', ' ', row[8]), row[9], row[10],
                         row[11], row[12], row[13], row[14], row[15],
                         row[16], row[17], row[18], row[19])
                     except UnicodeDecodeError as e:
@@ -74,7 +75,40 @@ def process_prices_zip(path):
 
                 yield values
 
-def fill_london_house_prices(data_dir):
-    data = 'London-price-paid-house-price-data-since-1995-CSV.zip'
-    path = os.path.join(data_dir, "raw", data)
-    yield from process_prices_zip(path)
+
+@task
+def london_price_houses(cfg):
+    def fill_london_house_prices():
+        data = 'London-price-paid-house-price-data-since-1995-CSV.zip'
+        path = os.path.join(cfg.raw_dir, data)
+        yield from process_prices_zip(path)
+    return db_create(cfg.db(), 'london_price_houses',
+    create="""CREATE TABLE IF NOT EXISTS london_price_houses (
+        Price INT,
+        DateProcessed DATE,
+        Postcode VARCHAR,
+        PropertyType VARCHAR,
+        WhetherNew VARCHAR,
+        Tenure VARCHAR,
+        Addr1 VARCHAR,
+        Addr2 VARCHAR,
+        Addr3 VARCHAR,
+        Addr4 VARCHAR,
+        Town VARCHAR,
+        LocalAuthority VARCHAR,
+        County VARCHAR,
+        RecordStatus VARCHAR)
+    """,
+    fill=fill_london_house_prices)
+
+@task
+def london_price_houses_geocoded(cfg):
+    db_create(cfg.db(), 'london_price_houses_geocoded',
+    create = """ CREATE MATERIALIZED VIEW london_price_houses_geocoded AS
+        SELECT
+            lph.*,
+            ST_Transform(p.geom, 900913) as geom
+        FROM
+            london_price_houses lph
+        LEFT JOIN uk_postcodes p ON lph.postcode = p.postcode """,
+    task_dep = ["london_price_houses"])

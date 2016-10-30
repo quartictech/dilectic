@@ -2,6 +2,7 @@ import yaml
 import psycopg2
 import functools
 import os.path
+from datetime import datetime
 
 class Config:
     def __init__(self, path):

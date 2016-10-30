@@ -43,6 +43,26 @@ def task_green_belt(cfg):
     )
 
 @task
+def task_statistical_gis_boundaries_london(cfg):
+    files = ["LSOA_2011_London_gen_MHW.shp", "London_Borough_Excluding_MHW.shp"]
+
+    yield unzip(
+        name = "unzip",
+        source = os.path.join(cfg.raw_dir, "statistical-gis-boundaries-london.zip"),
+        dest = cfg.derived_dir,
+        targets = [os.path.join(cfg.derived_dir, "statistical-gis-boundaries-london/ESRI", f) for f in files]
+    )
+
+    for f in files:
+        table_name = f.replace(".shp", "").lower()
+        yield shp_to_sql(
+            source = os.path.join(cfg.derived_dir, "statistical-gis-boundaries-london/ESRI", f),
+            dest = os.path.join(cfg.derived_dir, table_name + ".sql"),
+            srid = 27700,
+            name = "shp_to_sql: " + f
+        )
+
+@task
 def task_postcode_boundaries(cfg):
     shape_files = {
         "Areas.shp": "postcode_areas",
@@ -78,11 +98,32 @@ def task_statistical_gis_boundaries(cfg):
     )
 
     yield unzip(
-        name = "unzip_lsoas",
+        name = "unzip_lsoa 2011",
         source = os.path.join(cfg.derived_dir, "data/Lower_layer_super_output_areas_(E+W)_2011_Boundaries_(Full_Extent)_V2.zip"),
         dest = cfg.derived_dir,
         files = []
     )
+
+    yield shp_to_sql(
+        source = os.path.join(cfg.derived_dir, "LSOA_2011_EW_BFE_V2.shp"),
+        dest = os.path.join(cfg.derived_dir, "lsoa_2011_ew_bfe_v2.sql"),
+        srid = 27700,
+        name = "shp2sql 2011"
+        )
+
+    yield unzip(
+        name = "unzip_lsoa 2001",
+        source = os.path.join(cfg.derived_dir, "data/Lower_layer_super_output_areas_(E+W)_2001_Boundaries_(Full_Extent)_V2.zip"),
+        dest = cfg.derived_dir,
+        files = []
+    )
+
+    yield shp_to_sql(
+        source = os.path.join(cfg.derived_dir, "LSOA_2001_EW_BFE_V2.shp"),
+        dest = os.path.join(cfg.derived_dir, "lsoa_2001_ew_bfe_v2.sql"),
+        srid = 27700,
+        name = "shp2sql 2001"
+        )
 
 @task
 def task_crime_data(cfg):
