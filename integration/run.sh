@@ -19,4 +19,4 @@ docker_run() {
     $1
 }
 
-docker_run "python3 /integration/run.py"
+docker_run "/integration/integrations.sh"
