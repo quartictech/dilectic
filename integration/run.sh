@@ -14,7 +14,7 @@ docker_run() {
     -e "INPUT=/data/raw" \
     -e "OUTPUT=/data/derived" \
     -e "INTEGRATION=/integration" \
-    -w /integration \
+    -w /work \
     ${DOCKER_IMAGE} \
     $1
 }

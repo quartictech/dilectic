@@ -13,6 +13,7 @@ class Config:
             self.data_dir = config['data_dir']
             self.raw_dir = os.path.join(self.data_dir, "raw")
             self.derived_dir = os.path.join(self.data_dir, "derived")
+            self.dep_file = os.path.join(self.derived_dir, "doit.db")
             self._db_conn = None
 
     def db(self):
@@ -68,4 +69,5 @@ class IntegrationTaskLoader(TaskLoader):
             members = self.apply_config(module)
             task_list.extend(loader.load_tasks(members, self.cmd_names, cmd.execute_tasks))
         doit_config = loader.load_doit_config(members)
+        doit_config["dep_file"] = self._config.dep_file
         return task_list, doit_config
