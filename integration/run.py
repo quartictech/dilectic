@@ -19,6 +19,7 @@ if __name__ == "__main__":
     import integrations.london_price_houses
     import integrations.crime
     import integrations.boundaries
+    import integrations.osm
 
     task_loader = IntegrationTaskLoader(cfg,
         integrations.preprocess,
@@ -32,6 +33,7 @@ if __name__ == "__main__":
         integrations.postcodes,
         integrations.london_price_houses,
         integrations.crime,
-        integrations.boundaries
+        integrations.boundaries,
+        integrations.osm
     )
     sys.exit(DoitMain(task_loader).run(sys.argv[1:]))
