@@ -1,0 +1,98 @@
+import os.path
+import shlex
+import tempfile
+import csv
+import logging
+
+def _merge_dicts(a, b):
+    d = a.copy()
+    d.update(b)
+    return d
+
+def mkdir_p(path, **kwargs):
+    return _merge_dicts({
+        "actions": ["mkdir -p {path}".format(path=path)],
+    }, kwargs)
+
+def xls2csv(source, dest, page, **kwargs):
+    return _merge_dicts({
+        "actions":["""
+            xls2csv {source} \
+            | awk 'BEGIN {{ RS = ""; FS=""}} {{ print ${page} }}' > {dest}
+            """.format(source=source, dest=dest, page=page)],
+        "targets": [dest],
+        "file_dep": [source],
+    }, kwargs)
+
+def xlsx2csv(source, dest, **kwargs):
+    return _merge_dicts({
+    "name": source,
+    "actions": ["xlsx2csv {source} {dest}".format(source=source, dest=dest)],
+    "targets": [dest],
+    "file_dep": [source]
+    }, kwargs)
+
+def shp_to_sql(source, dest, srid, **kwargs):
+    table_name = os.path.basename(dest).replace(".sql", "")
+    return _merge_dicts({
+        "actions": ["""
+            shp2pgsql -s {srid} {source} {table_name} > {dest}
+            """.format(source=source, dest=dest, srid=srid, table_name=table_name)],
+        "file_dep": [source],
+    }, kwargs)
+
+def unzip(source, dest, files=[], **kwargs):
+    return _merge_dicts({
+        "actions": [
+        """
+        unzip -o {source} -d {dest} {files}
+        """.format(source=shlex.quote(source), dest=shlex.quote(dest), files=" ".join([shlex.quote(f) for f in files]))],
+        "file_dep": [source],
+        "targets": [os.path.join(dest, f) for f in files]
+        }, kwargs)
+
+def db_create(conn, name, create, fill=None, check_non_empty=True, **kwargs):
+    def object_exists():
+        with conn.cursor() as curs:
+            sql = "SELECT to_regclass('{name}')".format(name=name)
+            curs.execute(sql)
+            return curs.fetchone()[0] is not None
+
+    def object_non_empty():
+        with conn.cursor() as curs:
+            sql = "SELECT count(*) FROM {name}".format(name=name)
+            curs.execute(sql)
+            return curs.fetchone()[0] > 0
+
+    def create_object():
+        with conn.cursor() as curs:
+            curs.execute(create)
+            conn.commit()
+
+    def fill_table():
+        with conn.cursor() as curs:
+            with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tmp_file:
+                writer = csv.writer(tmp_file, delimiter='\t')
+                count = 0
+                for row in fill():
+                    if count % 10000 == 0:
+                        print(count)
+                    writer.writerow(row)
+                    count += 1
+                tmp_file.seek(0)
+                with conn.cursor() as curs:
+                    curs.copy_from(tmp_file, name, null='')
+                conn.commit()
+
+    yield _merge_dicts({
+        "name": "create",
+        "actions": [create_object],
+        "uptodate": [object_exists]
+    }, kwargs)
+
+    if fill:
+        yield _merge_dicts({
+            "name": "fill",
+            "actions": [fill_table],
+            "uptodate": [object_non_empty]
+        }, kwargs)
