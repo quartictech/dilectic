@@ -1,4 +1,4 @@
-catalogueUrl: http://locahost:8090/api
+catalogueUrl: http://catalogue:8090/api
 
 server:
   applicationContextPath: /

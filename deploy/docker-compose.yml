@@ -14,7 +14,7 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./catalogue/catalogue.yml:/catalogue-service/catalogue.yml
+      - ./catalogue/catalogue.yml:/catalogue-application/catalogue.yml
     environment:
       - CATALOGUE_SERVICE_OPTS=-Xms64m -Xmx64m
 
@@ -23,7 +23,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./weyl/weyl.yml:/weyl-service/weyl.yml
+      - ./weyl/weyl.yml:/weyl-application/weyl.yml
     environment:
       - WEYL_SERVICE_OPTS=-Xms32g -Xmx32g
     links:
