@@ -1,3 +1,4 @@
+import argparse
 import requests
 import sys
 import yaml
@@ -11,7 +12,16 @@ POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "dilectic"
 
 if __name__ == "__main__":
-    for config_file in sys.argv[1:]:
+    parser = argparse.ArgumentParser(
+        description="Register datasets with Catalogue.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("config_file", nargs="*", help="YAML config files")
+    parser.add_argument("-c", "--catalogue_api_root", help="Root URL for Catalogue API", default=CATALOG_API_ROOT)
+
+
+    args = parser.parse_args()
+
+    for config_file in args.config_file:
         print "Processing " + config_file + " ..."
 
         with open(config_file, "r") as stream:
@@ -34,7 +44,7 @@ if __name__ == "__main__":
         if "icon" in partial_config:
             full_config["metadata"]["icon"] = partial_config["icon"]
 
-        r = requests.put(CATALOG_API_ROOT + "/datasets", json=full_config)
+        r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
 
 
 # TODO: still need to handle static geojson imports:
