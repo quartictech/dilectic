@@ -6,4 +6,9 @@
  - `sudo docker-compose up -d`
  - Build the data integration docker image: `cd transform-raw && docker build -t data-integration .`
  - Run the the data integrations: `cd integration && ./run.sh`
- - Import into the stack: `cd weyl_imports && python import.py -p jdbc:postgresql://postgis/postgres yml_configs/*`
+
+## Importing into Weyl
+
+    cd weyl_imports
+    pip install -r requirements.txt
+    python import.py -p jdbc:postgresql://postgis/postgres yml_configs/*
