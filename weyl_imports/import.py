@@ -16,9 +16,8 @@ if __name__ == "__main__":
         description="Register datasets with Catalogue.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("config_file", nargs="*", help="YAML config files")
-    parser.add_argument("-c", "--catalogue_api_root", help="Root URL for Catalogue API", default=CATALOG_API_ROOT)
-
-
+    parser.add_argument("-c", "--catalogue_api_root", help="Catalogue API root URL", default=CATALOG_API_ROOT)
+    parser.add_argument("-p", "--postgres_url", help="Postgres URL", default=POSTGRES_URL)
     args = parser.parse_args()
 
     for config_file in args.config_file:
@@ -35,7 +34,7 @@ if __name__ == "__main__":
             },
             "locator": {
                 "type": "postgres",
-                "url": POSTGRES_URL,
+                "url": args.postgres_url,
                 "user": POSTGRES_USER,
                 "password": POSTGRES_PASSWORD,
                 "query": partial_config["query"]
