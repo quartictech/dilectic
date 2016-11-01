@@ -1,7 +1,7 @@
-{
-  "name": "Commercial",
-  "description": "Commercial and other buildings",
-  "query" : "SELECT * FROM planet_osm_polygon where amenity in ('youth_centre',
+---
+name: "Commercial"
+description: "Commercial and other buildings"
+query: "SELECT * FROM planet_osm_polygon where amenity in ('youth_centre',
   'spa', 'events_venue', 'yes', 'deli', 'ice_cream', 'university', 'betting_shop',
   'swimming_pool', 'food_court', 'exhibition_center', 'cafe', 'fast_food', 'barbers',
   'bank', 'internet_cafe', 'pharmacy', 'shop', 'shops', 'cobbler', 'cinema', 'optician', 'beautician',
@@ -13,4 +13,3 @@
   'electrical', 'clothes', 'butcher', 'catering', 'shopping_centre', 'gift', 'alcohol', 'sports', 'shoes',
   'coffee', 'games', 'hairdresser', 'wholesale', 'luggage', 'underwear', 'wine', 'off_license', 'market',
   'cafe', 'salon', 'fast_food', 'bakery', 'boutique', 'newsagent', 'estate_agent'  )"
-}

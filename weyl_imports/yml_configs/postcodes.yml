@@ -1,0 +1,4 @@
+---
+name: "UK Postcodes"
+description: "All postcode centroids in the UK"
+query: "SELECT * from uk_postcodes"
