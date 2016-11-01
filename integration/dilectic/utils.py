@@ -3,6 +3,7 @@ import psycopg2
 import functools
 import os.path
 from datetime import datetime
+from psycopg2.pool import PersistentConnectionPool
 
 class Config:
     def __init__(self, path):
@@ -14,15 +15,13 @@ class Config:
             self.raw_dir = os.path.join(self.data_dir, "raw")
             self.derived_dir = os.path.join(self.data_dir, "derived")
             self.dep_file = os.path.join(self.derived_dir, "doit.db")
-            self._db_conn = None
+            conn_str = "host={db[host]} dbname={db[dbname]} user={db[user]} password={db[password]}".format(db=config['db'])
+            self._db_pool = PersistentConnectionPool(0, 10, conn_str)
 
     def db(self):
-        if not self._db_conn:
-            self._db_conn = self._postgres_connect()
-        return self._db_conn
+        return self._db_pool.getconn()
 
     def _postgres_connect(self):
-        conn_str = "host={db[host]} dbname={db[dbname]} user={db[user]} password={db[password]}".format(db=self.config['db'])
         return psycopg2.connect(conn_str)
 
 def task(task_f):

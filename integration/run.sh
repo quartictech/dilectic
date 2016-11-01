@@ -2,8 +2,7 @@
 set -eu
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/config.sh
-
-ROOT_DIR=${1}
+ROOT_DIR=$DIR/..
 
 docker_run() {
   echo "Running $1 in docker"

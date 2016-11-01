@@ -103,7 +103,7 @@ def london_price_houses(cfg):
 
 @task
 def london_price_houses_geocoded(cfg):
-    db_create(cfg.db(), 'london_price_houses_geocoded',
+    return db_create(cfg.db(), 'london_price_houses_geocoded',
     create = """ CREATE MATERIALIZED VIEW london_price_houses_geocoded AS
         SELECT
             lph.*,
