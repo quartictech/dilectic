@@ -50,7 +50,6 @@ def extract_data(data_dir):
     return country_dict
 
 def get_table_columns(data_dir):
-    config = yaml.load(open(config_file))
     country_dict = extract_data(data_dir)
     all_countries = set()
     for borough, countries in country_dict.items():
@@ -61,7 +60,7 @@ def get_table_columns(data_dir):
 
 @task
 def ni_num_registrations(cfg):
-    def fill_ni_borough_table():
+    def fill_ni_borough_table(cur):
         country_dict = extract_data(cfg.raw_dir)
         all_countries = set()
         for borough, countries in country_dict.items():
@@ -76,6 +75,6 @@ def ni_num_registrations(cfg):
             columns_str = "({0})".format(",".join(row_headings))
             cur.execute("INSERT INTO nino_registration_boroughs " + columns_str + " VALUES " + values_str, tuple(row))
 
-    return db_crete(cfg.db(), 'nino_registration_boroughs',
+    return db_create(cfg.db(), 'nino_registration_boroughs',
     create="""CREATE TABLE IF NOT EXISTS nino_registration_boroughs ({0})""".format(get_table_columns(cfg.raw_dir)),
     fill_direct=fill_ni_borough_table)
