@@ -3,6 +3,9 @@ import os.path
 import sys
 import json
 
+from dilectic.utils import *
+from dilectic.actions import *
+
 STREETVIEW_API="http://maps.googleapis.com/maps/api/streetview"
 STREETVIEW_API_KEY="AIzaSyDtJsTGvARpNJBAC4C1eAARnk2djfvepzo"
 
