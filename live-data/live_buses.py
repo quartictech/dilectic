@@ -152,13 +152,10 @@ async def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, pa
             except Exception as e:
                 print(e)
 
-    e = {'name' : "Buses",
-        'description' : "buses",
-        'icon' : 'bus',
-        'attribution' : 'TfL',
-        'viewType' : 'MOST_RECENT',
-        'events' : [{'timestamp' : 0,
-                    'featureCollection' : geojson.FeatureCollection(collection)}]}
+    e = {
+        'timestamp' : 0,
+        'featureCollection' : geojson.FeatureCollection(collection)
+    }
     await post_events(e)
 
 async def main_loop():
