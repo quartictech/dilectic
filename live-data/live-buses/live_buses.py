@@ -5,7 +5,6 @@ import time
 from collections import defaultdict, OrderedDict
 import geojson
 import datetime
-import utils
 import shapely.geometry as SG
 from shapely.geometry import LineString
 
