@@ -1,0 +1,5 @@
+---
+name: "Jamcams"
+description: "TFL traffic camera feeds"
+query: "select * from jamcams_geocoded"
+icon: "camera"

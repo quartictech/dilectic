@@ -1,7 +1,7 @@
-{
-  "name": "Green Spaces",
-  "description": "Green spaces, parks, scrubs, playing fields, etc.",
-  "query": "SELECT * FROM planet_osm_polygon where amenity='park'
+---
+name:  "Green Spaces"
+description:  "Green spaces, parks, scrubs, playing fields, etc."
+query:  "SELECT * FROM planet_osm_polygon where amenity='park'
   or amenity='gardens'
   or amenity='square'
   or amenity='green'
@@ -25,4 +25,3 @@
   or landuse='recreation_ground'
   or landuse='farmland'
   or \"natural\"='wood'"
-}

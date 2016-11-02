@@ -1,6 +1,6 @@
 data/
 __pycache__
-.env
+.env/
 config.yml
 env
 postgres/
