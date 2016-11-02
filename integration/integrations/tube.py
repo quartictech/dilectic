@@ -38,4 +38,5 @@ def tube_geocoded(cfg):
             ST_SetSRID(ST_GeomFromGeoJson(t.geojson), 4326) as geom
         FROM
             _tube t
-            """)
+            """,
+    task_dep=["tube"])
