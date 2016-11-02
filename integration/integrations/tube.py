@@ -18,7 +18,7 @@ def tube(cfg):
                 unclosed_lines = [line for line in lines if not "closed" in line]
                 if len(unclosed_lines) > 0:
                     yield (props["id"], unclosed_lines[0]["name"], unclosed_lines[0]["colour"], row["geometry"])
-    return db_create(cfg.db(), '_tube',
+    return db_create(cfg, '_tube',
     create="""CREATE TABLE IF NOT EXISTS _tube (
         id VARCHAR,
         name VARCHAR,
@@ -30,7 +30,7 @@ def tube(cfg):
 
 @task
 def tube_geocoded(cfg):
-    return db_create(cfg.db(), 'tube',
+    return db_create(cfg, 'tube',
     create = """ CREATE MATERIALIZED VIEW tube AS
         SELECT
             t.id,

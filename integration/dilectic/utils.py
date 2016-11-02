@@ -21,9 +21,6 @@ class Config:
     def db(self):
         return self._db_pool.getconn()
 
-    def _postgres_connect(self):
-        return psycopg2.connect(conn_str)
-
 def task(task_f):
     def wrapper(cfg):
         def inner():

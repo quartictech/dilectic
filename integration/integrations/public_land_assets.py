@@ -25,7 +25,7 @@ def public_land_assets(cfg):
         path = os.path.join(cfg.derived_dir, 'gla-land-assets/*.csv')
         for f in glob.glob(path):
             yield from process_csv(f)
-    return db_create(cfg.db(), 'public_land_assets',
+    return db_create(cfg, 'public_land_assets',
     create="""CREATE TABLE IF NOT EXISTS public_land_assets (
         Owner VARCHAR,
         Borough VARCHAR,
@@ -49,7 +49,7 @@ def public_land_assets(cfg):
 
 @task
 def public_land_assets_geocoded(cfg):
-    return db_create(cfg.db(), 'public_land_assets_geocoded',
+    return db_create(cfg, 'public_land_assets_geocoded',
     create = """ CREATE MATERIALIZED VIEW public_land_assets_geocoded AS
         SELECT
             pla.*,

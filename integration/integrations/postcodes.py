@@ -14,7 +14,7 @@ def uk_postcodes_table(cfg):
         for row in rdr:
             yield (row[1], row[2], row[3])
 
-    return db_create(cfg.db(), '_uk_postcodes',
+    return db_create(cfg, '_uk_postcodes',
         create="""CREATE TABLE IF NOT EXISTS _uk_postcodes (
       	postcode VARCHAR,
             latitude DOUBLE PRECISION,
@@ -24,7 +24,7 @@ def uk_postcodes_table(cfg):
 
 @task
 def uk_postcodes_geocoded(cfg):
-    return db_create(cfg.db(), 'uk_postcodes',
+    return db_create(cfg, 'uk_postcodes',
         create = """ CREATE MATERIALIZED VIEW uk_postcodes AS
             SELECT
                 p.*,

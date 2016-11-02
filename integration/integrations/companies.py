@@ -39,7 +39,7 @@ def companies_house_register(cfg):
         for f in glob.glob(path):
             yield from extract_companies_zip(f)
 
-    return db_create(cfg.db(), 'companies',
+    return db_create(cfg, 'companies',
     create="""CREATE TABLE IF NOT EXISTS companies (
         CompanyName VARCHAR,
         CompanyNumber VARCHAR UNIQUE,
@@ -57,7 +57,7 @@ def companies_house_register(cfg):
 
 @task
 def companies_house_register_geocoded(cfg):
-    return db_create(cfg.db(), 'companies_geocoded',
+    return db_create(cfg, 'companies_geocoded',
     create = """ CREATE MATERIALIZED VIEW companies_geocoded AS
         SELECT
             c.*,

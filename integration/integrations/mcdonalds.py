@@ -22,7 +22,7 @@ def mcdonalds(cfg):
                 values = (line[0], line[1], line[2], line[3], line[4], line[5], line[6])
 
                 yield values
-    return db_create(cfg.db(), "mcdonalds",
+    return db_create(cfg, "mcdonalds",
     create="""CREATE TABLE IF NOT EXISTS mcdonalds (
         Name VARCHAR,
         Street VARCHAR,
@@ -37,7 +37,7 @@ def mcdonalds(cfg):
 
 @task
 def mcdonalds_geocoded(cfg):
-    return db_create(cfg.db(), 'mcdonalds_geocoded',
+    return db_create(cfg, 'mcdonalds_geocoded',
     create = """ CREATE MATERIALIZED VIEW mcdonalds_geocoded AS
         SELECT
             m.*,

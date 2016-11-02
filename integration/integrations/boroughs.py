@@ -17,7 +17,7 @@ def london_borough_profiles(cfg):
         for row in rdr:
             v= tuple(row[1:17] + [row[38], row[41], row[45], row[48]] + [row[74]] + row[79:])
             yield v
-    return db_create(cfg.db(), 'london_borough_profiles',
+    return db_create(cfg, 'london_borough_profiles',
         """ CREATE TABLE IF NOT EXISTS london_borough_profiles (
     --        Code VARCHAR,
             AreaName VARCHAR,

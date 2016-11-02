@@ -78,7 +78,7 @@ def london_gva_gdhi(cfg):
                 continue
             else:
                 yield v
-    return db_create(cfg.db(), 'london_gva_gdhi',
+    return db_create(cfg, 'london_gva_gdhi',
         create="""CREATE TABLE IF NOT EXISTS london_gva_gdhi (
             UKI VARCHAR,
             Year INT,

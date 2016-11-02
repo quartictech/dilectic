@@ -42,37 +42,39 @@ def shp_to_sql(source, dest, srid, **kwargs):
         "file_dep": [source],
     }, kwargs)
 
-def unzip(source, dest, files=[], **kwargs):
+def unzip(source, dest, files=[], targets=[], **kwargs):
     return _merge_dicts({
         "actions": [
         """
         unzip -o {source} -d {dest} {files}
         """.format(source=shlex.quote(source), dest=shlex.quote(dest), files=" ".join([shlex.quote(f) for f in files]))],
         "file_dep": [source],
-        "targets": [os.path.join(dest, f) for f in files]
+        "targets": [os.path.join(dest, f) for f in files] if files else targets
         }, kwargs)
 
-def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=None, db_config=None, **kwargs):
+def db_create(cfg, name, create=None, fill=None, fill_direct=None, sql_file=None, db_config=None, **kwargs):
     def object_exists():
         logging.info("Checking existence of %s", name)
-        with conn.cursor() as curs:
+        with cfg.db().cursor() as curs:
             sql = "SELECT to_regclass('{name}')".format(name=name)
             curs.execute(sql)
             return curs.fetchone()[0] is not None
 
     def object_non_empty():
-        with conn.cursor() as curs:
+        with cfg.db().cursor() as curs:
             sql = "SELECT count(*) FROM {name}".format(name=name)
             curs.execute(sql)
             return curs.fetchone()[0] > 0
 
     def create_object():
+        conn = cfg.db()
         with conn.cursor() as curs:
             curs.execute(create)
-            conn.commit()
+        conn.commit()
 
     def fill_table():
         logging.info("creating table %s", name)
+        conn = cfg.db()
         with conn.cursor() as curs:
             with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8') as tmp_file:
                 writer = csv.writer(tmp_file, delimiter='\t')
@@ -89,6 +91,7 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
 
     def fill_sql_file():
         if object_exists():
+            conn = cfg.db()
             logging.info("dropping %s", name)
             with conn.cursor() as curs:
                 curs.execute("drop table {name} cascade".format(name=name))
@@ -101,6 +104,7 @@ def db_create(conn, name, create=None, fill=None, fill_direct=None, sql_file=Non
         subprocess.check_call(command, shell=True, env=env)
 
     def fill_table_direct():
+        conn = cfg.db()
         with conn.cursor() as curs:
             fill_direct(curs)
         conn.commit()

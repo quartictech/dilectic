@@ -101,7 +101,7 @@ def task_statistical_gis_boundaries(cfg):
         name = "unzip_lsoa 2011",
         source = os.path.join(cfg.derived_dir, "data/Lower_layer_super_output_areas_(E+W)_2011_Boundaries_(Full_Extent)_V2.zip"),
         dest = cfg.derived_dir,
-        files = []
+        targets = [os.path.join(cfg.derived_dir, "LSOA_2011_EW_BFE_V2.shp")]
     )
 
     yield shp_to_sql(
@@ -115,7 +115,8 @@ def task_statistical_gis_boundaries(cfg):
         name = "unzip_lsoa 2001",
         source = os.path.join(cfg.derived_dir, "data/Lower_layer_super_output_areas_(E+W)_2001_Boundaries_(Full_Extent)_V2.zip"),
         dest = cfg.derived_dir,
-        files = []
+        files = [],
+        targets = [os.path.join(cfg.derived_dir, "LSOA_2001_EW_BFE_V2.shp")]
     )
 
     yield shp_to_sql(

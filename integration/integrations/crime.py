@@ -34,7 +34,7 @@ def crime_table(cfg):
                         print(line)
 
                     yield values
-    return db_create(cfg.db(), 'crime',
+    return db_create(cfg, 'crime',
     create="""CREATE TABLE IF NOT EXISTS crime (
         CrimeId VARCHAR,
         MonthYear DATE,
@@ -53,7 +53,7 @@ def crime_table(cfg):
 
 @task
 def crime_geocoded(cfg):
-    return db_create(cfg.db(), 'crime_geocoded',
+    return db_create(cfg, 'crime_geocoded',
     create = """ CREATE MATERIALIZED VIEW crime_geocoded AS
         SELECT
             m.*,

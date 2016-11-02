@@ -13,7 +13,7 @@ def jamcams_create(cfg):
                 props[v["key"]] = v["value"]
             yield (props["commonName"], props["view"], props["imageUrl"], props["videoUrl"], props["lat"], props["lon"])
 
-    return db_create(cfg.db(),
+    return db_create(cfg,
         'jamcams',
         create="""
         CREATE TABLE IF NOT EXISTS jamcams (
@@ -28,7 +28,7 @@ def jamcams_create(cfg):
 
 @task
 def jamcams_geocoded(cfg):
-    return db_create(cfg.db(), 'jamcams_geocoded',
+    return db_create(cfg, 'jamcams_geocoded',
     create = """ CREATE MATERIALIZED VIEW jamcams_geocoded AS
         SELECT
             m.*,

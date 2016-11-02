@@ -82,7 +82,7 @@ def london_price_houses(cfg):
         data = 'London-price-paid-house-price-data-since-1995-CSV.zip'
         path = os.path.join(cfg.raw_dir, data)
         yield from process_prices_zip(path)
-    return db_create(cfg.db(), 'london_price_houses',
+    return db_create(cfg, 'london_price_houses',
     create="""CREATE TABLE IF NOT EXISTS london_price_houses (
         Price INT,
         DateProcessed DATE,
@@ -103,7 +103,7 @@ def london_price_houses(cfg):
 
 @task
 def london_price_houses_geocoded(cfg):
-    return db_create(cfg.db(), 'london_price_houses_geocoded',
+    return db_create(cfg, 'london_price_houses_geocoded',
     create = """ CREATE MATERIALIZED VIEW london_price_houses_geocoded AS
         SELECT
             lph.*,

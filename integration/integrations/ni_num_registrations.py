@@ -75,6 +75,6 @@ def ni_num_registrations(cfg):
             columns_str = "({0})".format(",".join(row_headings))
             cur.execute("INSERT INTO nino_registration_boroughs " + columns_str + " VALUES " + values_str, tuple(row))
 
-    return db_create(cfg.db(), 'nino_registration_boroughs',
+    return db_create(cfg, 'nino_registration_boroughs',
     create="""CREATE TABLE IF NOT EXISTS nino_registration_boroughs ({0})""".format(get_table_columns(cfg.raw_dir)),
     fill_direct=fill_ni_borough_table)

@@ -38,7 +38,7 @@ def migration_boroughs(cfg):
                 json.dumps({'type' : 'timeseries', 'series' : ts['international_net']}),
                 json.dumps({'type' : 'timeseries', 'series' : ts['internal_net']}),
                 json.dumps({'type' : 'timeseries', 'series' : ts['other_change']})))
-    return db_create(cfg.db(), 'migration_boroughs',
+    return db_create(cfg, 'migration_boroughs',
     create="""CREATE TABLE IF NOT EXISTS migration_boroughs (
         BoroughCode VARCHAR,
         Borough VARCHAR,
