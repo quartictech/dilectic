@@ -23,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--dilectic_host", help="Dilectic host", default=DILECTIC_HOST)
     parser.add_argument("-n", "--nginx_port", help="Nginx port", default=NGINX_PORT)
     parser.add_argument("-p", "--postgres_port", help="Postgres port", default=POSTGRES_PORT)
+    parser.add_argument("-l", "--log-only", help="Just log requests", action="store_true")
     args = parser.parse_args()
 
     for config_file in args.config_file:
@@ -56,7 +57,16 @@ if __name__ == "__main__":
                 "url": "ws://{host}:{port}{context_path}".format(host=args.dilectic_host, port=args.nginx_port, context_path=partial_config["context_path"])
             }
 
-        r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
+        if partial_config["type"] == "geojson":
+            full_config["locator"] = {
+                "type": "geojson",
+                "url": "http://{host}:{port}{path}".format(host=args.dilectic_host, port=args.nginx_port, path=partial_config["path"])
+            }
+
+        if args.log_only:
+            pprint(full_config)
+        else:
+            r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
 
 
 # TODO: still need to handle static geojson imports:
