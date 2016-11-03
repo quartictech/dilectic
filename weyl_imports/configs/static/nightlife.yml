@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Nightlife"
 description: "A selection of nightlife venues"
 query: "SELECT * from planet_osm_polygon WHERE

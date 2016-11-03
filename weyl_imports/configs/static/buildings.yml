@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Other Spaces"
 description: "Other buildings and spaces excluding parks and nightlife"
 query: "SELECT * from planet_osm_polygon WHERE

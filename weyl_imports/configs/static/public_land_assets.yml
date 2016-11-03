@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Public Land Assets"
 description: "GLA Public Land Assets"
 query: "SELECT * from public_land_assets_geocoded"

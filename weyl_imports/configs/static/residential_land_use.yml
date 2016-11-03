@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Residential Land Use"
 description: "Residential land use"
 query: "SELECT * FROM planet_osm_polygon where landuse IN ('residential', 'retail;residential')"

@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "London LSOAs"
 description: "London Lower Super Output Areas"
 query: "select * from lsoa_2011_london_gen_mhw"

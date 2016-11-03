@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Companies"
 description: "All LTD companies in the UK"
 query: "SELECT companyname,geom from companies_geocoded limit 1000000"
