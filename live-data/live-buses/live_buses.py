@@ -1,20 +1,22 @@
 import requests
 import json
-from pprint import pprint
 import csv
 import time
-import psycopg2
 from collections import defaultdict, OrderedDict
 import geojson
 import datetime
-import utils
 import shapely.geometry as SG
 from shapely.geometry import LineString
+
+import asyncio
+import websockets
 
 # APP_ID="4abd99df"
 # APP_KEY="0f76ba70a21836b0991d192dceae511b"
 APP_ID = "860e7675"
 APP_KEY = "1d36a20279e6ac727ddfdcaeba2e97ea"
+
+connected = set()
 
 FIELDS = [
         "stationName",
@@ -33,6 +35,10 @@ FIELDS = [
         "lineId",
         "lineName"
 ]
+
+async def post_events(e):
+    for queue in connected:
+        await queue.put(e)
 
 def request(path, **kwargs):
     r = requests.get("https://api.tfl.gov.uk{path}?app_id={app_id}&app_key={app_key}".format(path=path, app_id=APP_ID, app_key=APP_KEY))
@@ -129,7 +135,7 @@ def prepare_geojson(line_id, bus_id, pos):
     })
     return bus_feature
 
-def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
+async def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
     collection = []
 
     for line_id in line_ids:
@@ -145,16 +151,13 @@ def prepare_event(line_ids, line_info, bus_arrivals, time_to_dest, eta, path):
             except Exception as e:
                 print(e)
 
-    e = {'name' : "Buses",
-        'description' : "buses",
-        'icon' : 'bus',
-        'attribution' : 'TfL',
-        'viewType' : 'MOST_RECENT',
-        'events' : [{'timestamp' : 0,
-                    'featureCollection' : geojson.FeatureCollection(collection)}]}
-    utils.post_events('buses', e, 'http://localhost:8080/api')
+    e = {
+        'timestamp' : 0,
+        'featureCollection' : geojson.FeatureCollection(collection)
+    }
+    await post_events(e)
 
-if __name__ == "__main__":
+async def main_loop():
     API_DT = 10
     ANIMATION_DT = 3
     LINE_IDS = ['88', '15', '9']
@@ -175,6 +178,7 @@ if __name__ == "__main__":
 
     t = 0
     while True:
+        print("processing time step")
         if t >= API_DT:
             t -= API_DT
             for line_id in LINE_IDS:
@@ -185,7 +189,28 @@ if __name__ == "__main__":
             eta[line_id] = estimate_to_station(bus_arrivals[line_id], going_towards[line_id], line_info[line_id], eta[line_id], ANIMATION_DT)
             going_towards[line_id] = current_stops(bus_arrivals[line_id], line_info[line_id], going_towards[line_id])
 
-        prepare_event(LINE_IDS, line_info, bus_arrivals, time_to_dest, eta, path)
+        await prepare_event(LINE_IDS, line_info, bus_arrivals, time_to_dest, eta, path)
 
         t += ANIMATION_DT
-        time.sleep(ANIMATION_DT)
+        await asyncio.sleep(ANIMATION_DT)
+
+
+async def socket(websocket, path):
+    print("Registering websocket")
+    global connected
+    # Register.
+    queue = asyncio.Queue(10)
+    connected.add(queue)
+    try:
+        while True:
+            item = await queue.get()
+            await websocket.send(json.dumps(item))
+    finally:
+        # Unregister.
+        print("Unregistering websocket")
+        connected.remove(queue)
+
+if __name__ == "__main__":
+    start_server = websockets.serve(socket, 'localhost', 5000)
+    asyncio.get_event_loop().run_until_complete(asyncio.gather(start_server, main_loop()))
+    asyncio.get_event_loop().run_forever()
