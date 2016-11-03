@@ -7,10 +7,12 @@ from pprint import pprint
 
 CATALOG_API_ROOT = "http://localhost:8090/api"
 
-POSTGRES_URL = "jdbc:postgresql://localhost/postgres"
+DILECTIC_HOST = "localhost"
+HTTP_PORT = "80"
+POSTGRES_PORT = "5432"
+POSTGRES_DB = "postgres"
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "dilectic"
-TAYO_URL = "http://localhost:5000"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -18,8 +20,9 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("config_file", nargs="*", help="YAML config files")
     parser.add_argument("-c", "--catalogue_api_root", help="Catalogue API root URL", default=CATALOG_API_ROOT)
-    parser.add_argument("-p", "--postgres_url", help="Postgres URL", default=POSTGRES_URL)
-    parser.add_argument("-t", "--tayo_url", help="Tayo URL", default=TAYO_URL)
+    parser.add_argument("-d", "--dilectic_host", help="Dilectic host", default=DILECTIC_HOST)
+    parser.add_argument("-h", "--http_port", help="HTTP port", default=HTTP_PORT)
+    parser.add_argument("-p", "--postgres_port", help="Postgres port", default=POSTGRES_PORT)
     args = parser.parse_args()
 
     for config_file in args.config_file:
@@ -33,32 +36,27 @@ if __name__ == "__main__":
                 "name": partial_config["name"],
                 "description": partial_config["description"],
                 "attribution": partial_config.get("attribution", "<< Unknown >>"),
-            },
-            "locator": {
-                "type": "postgres",
-                "url": args.postgres_url,
-                "user": POSTGRES_USER,
-                "password": POSTGRES_PASSWORD,
-                "query": partial_config["query"]
             }
         }
         if "icon" in partial_config:
             full_config["metadata"]["icon"] = partial_config["icon"]
 
-        r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
+        if partial_config["type"] == "postgres":
+            full_config["locator"] = {
+                "type": "postgres",
+                "url": "jdbc:postgresql://{host}:{port}/{db}".format(host=args.dilectic_host, port=args.postgres_port, db=POSTGRES_DB),
+                "user": POSTGRES_USER,
+                "password": POSTGRES_PASSWORD,
+                "query": partial_config["query"]
+            }
 
-    live_bus_config = {
-        "metadata": {
-            "name": "Buses",
-            "description": "London Buses",
-            "attribution": "TFL"
-        },
-        "locator": {
-            "type": "websocket",
-            "url": args.tayo_url
-        }
-    }
-    r = requests.put(args.catalogue_api_root + "/datasets", json=live_bus_config)
+        if partial_config["type"] == "websocket":
+            full_config["locator"] = {
+                "type": "websocket",
+                "url": "http://{host}:{port}{context_path}".format(host=args.dilectic_host, port=args.http_port, context_path=partial_config["context_path"])
+            }
+
+        r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
 
 
 # TODO: still need to handle static geojson imports:

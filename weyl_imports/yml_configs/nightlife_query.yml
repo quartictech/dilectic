@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Nightlife Points"
 description: "Nightlife Locations"
 query: "SELECT Type, Name, geom from amenities WHERE type in ('pub', 'restaurant', 'fast_food', 'bar', 'cafe', 'club', 'nightclub')"

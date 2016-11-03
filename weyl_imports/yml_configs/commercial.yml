@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Commercial"
 description: "Commercial and other buildings"
 query: "SELECT * FROM planet_osm_polygon where amenity in ('youth_centre',

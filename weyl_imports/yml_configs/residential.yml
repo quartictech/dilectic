@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Residential Buildings"
 description: "Residential buildings"
 query: "SELECT * FROM planet_osm_polygon where building IN

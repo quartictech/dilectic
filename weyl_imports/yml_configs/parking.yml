@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Parking Lots"
 description: "Parking Lots"
 query: "SELECT * from planet_osm_polygon WHERE amenity = 'parking'"

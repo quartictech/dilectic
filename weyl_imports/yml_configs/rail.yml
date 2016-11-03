@@ -1,4 +1,5 @@
 ---
+type: "postgres"
 name: "Rail Lines"
 description: "Rail lines other than London Tube"
 query: "select * from planet_osm_line where railway is not null and railway != 'subway'"
