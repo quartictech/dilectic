@@ -10,6 +10,7 @@ CATALOG_API_ROOT = "http://localhost:8090/api"
 POSTGRES_URL = "jdbc:postgresql://localhost/postgres"
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "dilectic"
+TAYO_URL = "http://localhost:5000"
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -18,10 +19,11 @@ if __name__ == "__main__":
     parser.add_argument("config_file", nargs="*", help="YAML config files")
     parser.add_argument("-c", "--catalogue_api_root", help="Catalogue API root URL", default=CATALOG_API_ROOT)
     parser.add_argument("-p", "--postgres_url", help="Postgres URL", default=POSTGRES_URL)
+    parser.add_argument("-t", "--tayo_url", help="Tayo URL", default=TAYO_URL)
     args = parser.parse_args()
 
     for config_file in args.config_file:
-        print "Processing " + config_file + " ..."
+        print("Processing " + config_file + " ...")
 
         with open(config_file, "r") as stream:
             partial_config = yaml.load(stream)
@@ -44,6 +46,19 @@ if __name__ == "__main__":
             full_config["metadata"]["icon"] = partial_config["icon"]
 
         r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
+
+    live_bus_config = {
+        "metadata": {
+            "name": "Buses",
+            "description": "London Buses",
+            "attribution": "TFL"
+        },
+        "locator": {
+            "type": "websocket",
+            "url": args.tayo_url
+        }
+    }
+    r = requests.put(args.catalogue_api_root + "/datasets", json=live_bus_config)
 
 
 # TODO: still need to handle static geojson imports:
