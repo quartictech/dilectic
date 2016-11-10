@@ -2,4 +2,4 @@
 type: "geojson"
 name:  "Road Traffic Counts"
 description: "AADF Road Traffic Counts"
-path: "/datasets/AADF-data-major-roads.geojson"
+path: "/datasets/derived/AADF-data-major-roads.geojson"

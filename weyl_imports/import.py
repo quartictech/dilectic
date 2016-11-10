@@ -7,7 +7,8 @@ from pprint import pprint
 
 CATALOG_API_ROOT = "http://localhost:8090/api"
 
-DILECTIC_HOST = "localhost"
+POSTGRES_HOST = "localhost"
+NGINX_HOST = "localhost"
 NGINX_PORT = "80"
 POSTGRES_PORT = "5432"
 POSTGRES_DB = "postgres"
@@ -20,16 +21,17 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("config_file", nargs="*", help="YAML config files")
     parser.add_argument("-c", "--catalogue_api_root", help="Catalogue API root URL", default=CATALOG_API_ROOT)
-    parser.add_argument("-d", "--dilectic_host", help="Dilectic host", default=DILECTIC_HOST)
-    parser.add_argument("-n", "--nginx_port", help="Nginx port", default=NGINX_PORT)
-    parser.add_argument("-p", "--postgres_port", help="Postgres port", default=POSTGRES_PORT)
+    parser.add_argument("-p", "--postgres_host", help="Postgres host", default=POSTGRES_HOST)
+    parser.add_argument("-n", "--nginx_host", help="Nginx host", default=NGINX_HOST)
+    parser.add_argument("-g", "--nginx_port", help="Nginx port", default=NGINX_PORT)
+    parser.add_argument("-o", "--postgres_port", help="Postgres port", default=POSTGRES_PORT)
     parser.add_argument("-l", "--log-only", help="Just log requests", action="store_true")
     args = parser.parse_args()
 
     for config_file in args.config_file:
         print("Processing " + config_file + " ...")
 
-        with open(config_file, "r") as stream:
+        with open(config_file, "r", encoding='utf-8') as stream:
             partial_config = yaml.load(stream)
 
         full_config = {
