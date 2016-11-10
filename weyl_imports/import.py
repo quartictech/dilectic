@@ -47,7 +47,7 @@ if __name__ == "__main__":
         if partial_config["type"] == "postgres":
             full_config["locator"] = {
                 "type": "postgres",
-                "url": "jdbc:postgresql://{host}:{port}/{db}".format(host=args.dilectic_host, port=args.postgres_port, db=POSTGRES_DB),
+                "url": "jdbc:postgresql://{host}:{port}/{db}".format(host=args.postgres_host, port=args.postgres_port, db=POSTGRES_DB),
                 "user": POSTGRES_USER,
                 "password": POSTGRES_PASSWORD,
                 "query": partial_config["query"]
@@ -56,13 +56,13 @@ if __name__ == "__main__":
         if partial_config["type"] == "websocket":
             full_config["locator"] = {
                 "type": "websocket",
-                "url": "ws://{host}:{port}{context_path}".format(host=args.dilectic_host, port=args.nginx_port, context_path=partial_config["context_path"])
+                "url": "ws://{host}:{port}{context_path}".format(host=args.nginx_host, port=args.nginx_port, context_path=partial_config["context_path"])
             }
 
         if partial_config["type"] == "geojson":
             full_config["locator"] = {
                 "type": "geojson",
-                "url": "http://{host}:{port}{path}".format(host=args.dilectic_host, port=args.nginx_port, path=partial_config["path"])
+                "url": "http://{host}:{port}{path}".format(host=args.nginx_host, port=args.nginx_port, path=partial_config["path"])
             }
 
         if args.log_only:
