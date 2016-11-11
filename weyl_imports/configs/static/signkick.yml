@@ -2,4 +2,4 @@
 type: "geojson"
 name: "Outdoor Advertising Stock London"
 description: "Digital billboards, panels and signs in London"
-path: "/datasets/signkick.geojson"
+path: "/datasets/derived/signkick.geojson"
