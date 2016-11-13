@@ -1,0 +1,7 @@
+---
+type: "websocket"
+name: "Quartic Tracking"
+description: "Quartic GPS Location Tracking"
+attribution: "Quartic"
+icon: "location-arrow"
+context_path: "/tracker"
