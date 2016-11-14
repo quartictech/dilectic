@@ -69,13 +69,3 @@ if __name__ == "__main__":
             pprint(full_config)
         else:
             r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
-
-
-# TODO: still need to handle static geojson imports:
-
-# curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/signkick.json
-# curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/gb-road-traffic-counts/AADF-data-major-roads.json
-# curl -XPUT -H Content-Type:application/json $API_ROOT/import/geojson -d @../data/derived/zoopla.json
-#
-# source $DIR/../integration/env/bin/activate
-# python $DIR/../integration/scripts/live/disruptions_api.py
