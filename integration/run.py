@@ -23,6 +23,7 @@ if __name__ == "__main__":
     import integrations.road_traffic
     import integrations.billboards
     import integrations.ni_num_registrations
+    import integrations.disruptions
 
     task_loader = IntegrationTaskLoader(cfg,
         integrations.preprocess,
@@ -40,6 +41,7 @@ if __name__ == "__main__":
         integrations.osm,
         integrations.road_traffic,
         integrations.billboards,
-        integrations.ni_num_registrations
+        integrations.ni_num_registrations,
+        integrations.disruptions
     )
     sys.exit(DoitMain(task_loader).run(sys.argv[1:]))
