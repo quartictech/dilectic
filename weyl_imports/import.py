@@ -44,10 +44,8 @@ if __name__ == "__main__":
         if "icon" in partial_config:
             full_config["metadata"]["icon"] = partial_config["icon"]
 
-        if "viewType" in partial_config:
-            full_config["map"] = {
-                "viewType": partial_config["viewType"]
-            }
+        if "map" in partial_config:
+            full_config["map"] = partial_config["map"]
 
         if partial_config["type"] == "postgres":
             full_config["locator"] = {
