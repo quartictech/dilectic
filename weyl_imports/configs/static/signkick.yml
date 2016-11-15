@@ -4,6 +4,7 @@ name: "Outdoor Advertising Stock London"
 description: "Digital billboards, panels and signs in London"
 path: "/datasets/signkick.geojson"
 map:
+  titleAttribute: "Name"
   blessedAttributes:
     - "Price"
     - "Is Digital"

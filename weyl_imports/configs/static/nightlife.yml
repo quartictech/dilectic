@@ -12,6 +12,7 @@ query: "SELECT * from planet_osm_polygon WHERE
     OR amenity = 'restaurant_bar'
     OR amenity = 'restaurant'"
 map:
+  titleAttribute: "name"
   blessedAttributes:
     - "operator"
     - "amenity"
