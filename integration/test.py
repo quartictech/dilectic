@@ -32,6 +32,9 @@ class TestDataIntegrations(unittest.TestCase):
     def test_billboards(self):
         self.assertFile(self.derived_file("signkick.geojson"))
 
+    def test_disruptions(self):
+        self.assertFile(self.derived_file("disruptions.geojson"))
+
     def test_osm(self):
         self.assertTable("planet_osm_roads")
         self.assertTable("planet_osm_polygon")

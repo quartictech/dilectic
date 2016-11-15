@@ -1,0 +1,7 @@
+---
+type: "geojson"
+name: "Traffic Disruptions"
+description: "Road traffic disruptions"
+attribution: "TfL"
+icon: "exclamation triangle"
+path: "/datasets/disruptions.geojson"
