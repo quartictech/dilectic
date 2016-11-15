@@ -23,15 +23,24 @@ def disruptions(cfg):
             props['comments'] = d.get('comments')
         if 'currentUpdate' in d.keys():
             props['currentUpdate'] = d.get('currentUpdate')
-        # feat1 = geojson.Feature(id=d['id'], geometry=loc, properties=props)
-        feat2 = geojson.Feature(id=d['id'], geometry=geom, properties=props)
-        return [feat2]
+
+        return {
+            "type": "Feature",
+            "id": d['id'],
+            "geometry": geom,
+            "properties": props
+        }
 
     def prepare_geojson(disruptions):
         features = []
+
         for d in disruptions:
             features = features + prepare_features(d)
-        return geojson.FeatureCollection(features)
+
+        return {
+            "type": "FeatureCollection",
+            "features": features
+        }
 
     def generate_geojson(out_path):
         r = requests.get('https://api-neon.tfl.gov.uk/Road/All/Disruption/')
