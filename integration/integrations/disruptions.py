@@ -35,7 +35,7 @@ def disruptions(cfg):
         features = []
 
         for d in disruptions:
-            features.append(d)
+            features.append(prepare_features(d))
 
         return {
             "type": "FeatureCollection",
