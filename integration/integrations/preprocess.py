@@ -22,7 +22,7 @@ def task_ng_infrastructure(cfg):
     ]
     yield unzip(
         name = "unzip",
-        source = os.path.join(cfg.raw_dir, "nationalgrid.zip")
+        source = os.path.join(cfg.raw_dir, "nationalgrid.zip"),
         dest = os.path.join(cfg.derived_dir, "nationalgrid")
     )
     for s in sources:
