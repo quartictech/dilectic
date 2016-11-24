@@ -11,6 +11,26 @@ def task_migration_xls(cfg):
     return xls2csv(source, dest, 3)
 
 @task
+def task_ng_infrastructure(cfg):
+    sources = [
+        "Cable.shp",
+        "Gas_Pipe.shp",
+        "Gas_Site.shp",
+        "OHL.shp",
+        "Substations.shp",
+        "Towers.shp"
+    ]
+    yield unzip(
+        name = "unzip",
+        source = os.path.join(cfg.raw_dir, "nationalgrid.zip"),
+        dest = os.path.join(cfg.derived_dir, "nationalgrid")
+    )
+    for s in sources:
+        source = os.path.join(cfg.derived_dir, "nationalgrid", s)
+        dest = os.path.join(cfg.derived_dir, "nationalgrid", s.replace(".shp", ".geojson"))
+        yield ogr2ogr(source, dest, name="{}-ogr2ogr".format(s.replace(".shp", "")))
+
+@task
 def task_gla_land_assets(cfg):
     sources = [
         "GLA_assets.xlsx",
