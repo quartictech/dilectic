@@ -8,6 +8,7 @@ dependencies:
     - "~/docker"
   override:
     - curl https://raw.githubusercontent.com/quartictech/circleci-utils/develop/circleci-gcloud-login | bash
+    - sudo /opt/google-cloud-sdk/bin/gsutil -m rsync -r gs://quartic-dilectic/raw-data data/raw
     - cd integration && ./setup.sh
 
 test:
