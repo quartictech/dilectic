@@ -1,0 +1,5 @@
+---
+type: "geojson"
+name: "National Grid Gas Sites"
+description: "National Grid Gas Sites Infrastructure"
+path: "/datasets/ng_gas_sites.geojson"
