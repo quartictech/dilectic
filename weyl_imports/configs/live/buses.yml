@@ -5,3 +5,7 @@ description: "London Buses"
 attribution: "TfL"
 icon: "bus"
 context_path: "/tayo"
+map:
+  blessedAttributes:
+    - "route"
+    - "vehicle id"

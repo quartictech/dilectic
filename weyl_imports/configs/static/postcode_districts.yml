@@ -3,3 +3,7 @@ type: "postgres"
 name: "Postcode Districts"
 description: "Postcode districts in the UK"
 query: "SELECT * from postcode_districts"
+map:
+  titleAttribute: "name"
+  blessedAttributes:
+    - "gid"

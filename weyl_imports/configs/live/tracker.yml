@@ -5,3 +5,5 @@ description: "Quartic GPS Location Tracking"
 attribution: "Quartic"
 icon: "location arrow"
 context_path: "/tracker"
+map:
+  viewType: "LOCATION_AND_TRACK"
