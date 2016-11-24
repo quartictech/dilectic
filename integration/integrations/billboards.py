@@ -7,7 +7,7 @@ from dilectic.utils import *
 from dilectic.actions import *
 
 STREETVIEW_API="http://maps.googleapis.com/maps/api/streetview"
-STREETVIEW_API_KEY="AIzaSyDtJsTGvARpNJBAC4C1eAARnk2djfvepzo"
+STREETVIEW_API_KEY="AIzaSyC8e9HV9x5ISTadQgyft7Jz6YDie9fNuGc"
 
 @task
 def signkick(cfg):
