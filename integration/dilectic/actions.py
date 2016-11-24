@@ -25,6 +25,13 @@ def xls2csv(source, dest, page, **kwargs):
         "file_dep": [source],
     }, kwargs)
 
+def ogr2ogr(source, dest, **kwargs):
+    return _merge_dicts({
+        "actions":["ogr2ogr -f GeoJSON -t_srs wgs84 {source} {dest}".format(source=source, dest=dest)],
+        "targets": [dest],
+        "file_dep": [source],
+    }, kwargs)
+
 def xlsx2csv(source, dest, **kwargs):
     return _merge_dicts({
     "name": source,
