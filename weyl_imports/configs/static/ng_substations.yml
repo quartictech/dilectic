@@ -2,4 +2,4 @@
 type: "geojson"
 name: "National Grid Substations"
 description: "National Grid Substaion Infrastructure"
-path: "/datasets/ng_substations.geojson"
+path: "/datasets/Substations.geojson"

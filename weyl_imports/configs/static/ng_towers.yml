@@ -2,4 +2,4 @@
 type: "geojson"
 name: "National Grid Towers"
 description: "National Grid Tower Infrastructure"
-path: "/datasets/ng_towers.geojson"
+path: "/datasets/Towers.geojson"

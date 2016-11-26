@@ -2,4 +2,4 @@
 type: "geojson"
 name: "National Grid Cables"
 description: "National Grid Cables Infrastructure"
-path: "/datasets/ng_cable.geojson"
+path: "/datasets/Cable.geojson"
