@@ -27,7 +27,7 @@ def task_ng_infrastructure(cfg):
     )
     for s in sources:
         source = os.path.join(cfg.derived_dir, "nationalgrid", s)
-        dest = os.path.join(cfg.derived_dir, "nationalgrid", s.replace(".shp", ".geojson"))
+        dest = os.path.join(cfg.final_dir, s.replace(".shp", ".geojson"))
         yield ogr2ogr(source, dest, name="{}-ogr2ogr".format(s.replace(".shp", "")))
 
 @task

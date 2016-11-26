@@ -47,7 +47,7 @@ def disruptions(cfg):
         output = prepare_geojson(r.json())
         json.dump(output, open(out_path, "w"), indent=1)
 
-    dest = os.path.join(cfg.derived_dir, "disruptions.geojson")
+    dest = os.path.join(cfg.final_dir, "disruptions.geojson")
     return {
         "actions": [lambda: generate_geojson(dest)],
         "targets": [dest]

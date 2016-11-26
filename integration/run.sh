@@ -10,9 +10,7 @@ docker_run() {
     -v ${ROOT_DIR}/integration:/integration \
     -v ${ROOT_DIR}/data/raw:/data/raw \
     -v ${ROOT_DIR}/data/derived:/data/derived \
-    -e "INPUT=/data/raw" \
-    -e "OUTPUT=/data/derived" \
-    -e "INTEGRATION=/integration" \
+    -v ${ROOT_DIR}/data/final:/data/final \
     -w /work \
     ${DOCKER_IMAGE} \
     $1
