@@ -2,4 +2,8 @@
 type: "geojson"
 name: "National Grid Gas Sites"
 description: "National Grid Gas Sites Infrastructure"
+attribution: "National Grid"
+icon: "industry"
 path: "/datasets/Gas_Site.geojson"
+map:
+  titleAttribute: "SITE_NAME"

@@ -1,5 +1,9 @@
 ---
 type: "geojson"
 name: "National Grid Substations"
-description: "National Grid Substaion Infrastructure"
+description: "National Grid Substation Infrastructure"
+attribution: "National Grid"
+icon: "industry"
 path: "/datasets/Substations.geojson"
+map:
+  titleAttribute: "Substation2"
