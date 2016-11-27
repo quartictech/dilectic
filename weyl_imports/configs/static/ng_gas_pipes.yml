@@ -2,4 +2,8 @@
 type: "geojson"
 name: "National Grid Gas Pipes"
 description: "National Grid Gas Pipe Infrastructure"
-path: "/datasets/ng_gaspipes.geojson"
+attribution: "National Grid"
+icon: "random"
+path: "/datasets/Gas_Pipe.geojson"
+map:
+  titleAttribute: "PIPE_NAME"

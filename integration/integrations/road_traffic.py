@@ -56,7 +56,7 @@ def traffic_counts_geojson(cfg):
         json.dump(output, open(out_path, "w"))
 
     source = os.path.join(cfg.derived_dir, "gb-road-traffic-counts/AADF-data-major-roads.csv")
-    dest = os.path.join(cfg.derived_dir, "gb-road-traffic-counts/AADF-data-major-roads.geojson")
+    dest = os.path.join(cfg.final_dir, "AADF-data-major-roads.geojson")
     return {
         "actions": [lambda: make(source, dest)],
         "targets": [dest],

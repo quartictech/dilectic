@@ -42,7 +42,7 @@ def signkick(cfg):
         json.dump(output, open(out_path, "w"), indent=1)
 
     source = os.path.join(cfg.raw_dir, "signkick.csv")
-    dest = os.path.join(cfg.derived_dir, "signkick.geojson")
+    dest = os.path.join(cfg.final_dir, "signkick.geojson")
     return {
         "actions": [lambda: signkick_geojson(source, dest)],
         "targets": [dest],

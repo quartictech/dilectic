@@ -2,4 +2,8 @@
 type: "geojson"
 name: "National Grid OHL"
 description: "National Grid Overhead Line Infrastructure"
-path: "/datasets/ng_OHL.geojson"
+attribution: "National Grid"
+icon: "random"
+path: "/datasets/OHL.geojson"
+map:
+  titleAttribute: "CIRCUIT1"

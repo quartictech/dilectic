@@ -26,14 +26,14 @@ class TestDataIntegrations(unittest.TestCase):
     def assertFile(self, path):
         return self.assertTrue(os.path.exists(path), "file {0} does not exist".format(path))
 
-    def derived_file(self, rel):
-        return os.path.join(cfg.derived_dir, rel)
+    def final_file(self, rel):
+        return os.path.join(cfg.final_dir, rel)
 
     def test_billboards(self):
-        self.assertFile(self.derived_file("signkick.geojson"))
+        self.assertFile(self.final_file("signkick.geojson"))
 
     def test_disruptions(self):
-        self.assertFile(self.derived_file("disruptions.geojson"))
+        self.assertFile(self.final_file("disruptions.geojson"))
 
     def test_osm(self):
         self.assertTable("planet_osm_roads")

@@ -14,6 +14,7 @@ class Config:
             self.data_dir = config['data_dir']
             self.raw_dir = os.path.join(self.data_dir, "raw")
             self.derived_dir = os.path.join(self.data_dir, "derived")
+            self.final_dir = os.path.join(self.data_dir, "final")
             self.dep_file = os.path.join(self.derived_dir, "doit.db")
             conn_str = "host={db[host]} dbname={db[dbname]} user={db[user]} password={db[password]}".format(db=config['db'])
             self._db_pool = PersistentConnectionPool(0, 10, conn_str)
