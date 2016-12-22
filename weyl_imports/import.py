@@ -1,4 +1,5 @@
 import argparse
+import logging
 import requests
 import sys
 import yaml
@@ -15,6 +16,8 @@ POSTGRES_DB = "postgres"
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "dilectic"
 
+logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Register datasets with Catalogue.",
@@ -29,7 +32,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for config_file in args.config_file:
-        print("Processing " + config_file + " ...")
+        logging.info("Processing {} ...".format(config_file))
 
         with open(config_file, "r", encoding='utf-8') as stream:
             partial_config = yaml.load(stream)
@@ -71,4 +74,5 @@ if __name__ == "__main__":
         if args.log_only:
             pprint(full_config)
         else:
-            r = requests.put(args.catalogue_api_root + "/datasets", json=full_config)
+            r = requests.post(args.catalogue_api_root + "/datasets", json=full_config)
+            r.raise_for_status()
