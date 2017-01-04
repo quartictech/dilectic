@@ -1,9 +1,9 @@
 ---
 type: "websocket"
-name: "Quartic Tracking"
-description: "Quartic GPS Location Tracking"
+name: "Mock Tracking"
+description: "Mock GPS Location Tracking"
 attribution: "Quartic"
 icon: "location arrow"
-context_path: "/tracker"
+context_path: "/mock-tracker"
 map:
   viewType: "LOCATION_AND_TRACK"
