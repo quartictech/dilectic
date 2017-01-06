@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Register datasets with Catalogue.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("config_file", nargs="*", help="YAML config files")
+    parser.add_argument("config_file", nargs="+", help="YAML config files")
     parser.add_argument("-c", "--catalogue_api_root", help="Catalogue API root URL", default=CATALOG_API_ROOT)
     parser.add_argument("-p", "--postgres_host", help="Postgres host", default=POSTGRES_HOST)
     parser.add_argument("-n", "--nginx_host", help="Nginx host", default=NGINX_HOST)
