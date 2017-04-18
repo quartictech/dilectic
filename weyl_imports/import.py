@@ -44,8 +44,6 @@ if __name__ == "__main__":
                 "attribution": partial_config.get("attribution", "<< Unknown >>"),
             }
         }
-        if "icon" in partial_config:
-            full_config["metadata"]["icon"] = partial_config["icon"]
 
         if "map" in partial_config:
             full_config["map"] = partial_config["map"]
