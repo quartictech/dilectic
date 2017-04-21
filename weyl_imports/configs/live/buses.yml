@@ -3,7 +3,6 @@ type: "websocket"
 name: "Buses"
 description: "London Buses"
 attribution: "TfL"
-icon: "bus"
 context_path: "/tayo"
 map:
   blessedAttributes:
