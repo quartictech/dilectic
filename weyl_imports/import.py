@@ -46,7 +46,7 @@ if __name__ == "__main__":
         }
 
         if "map" in partial_config:
-            full_config["map"] = partial_config["map"]
+            full_config["extensions"]["map"] = partial_config["map"]
 
         if partial_config["type"] == "postgres":
             full_config["locator"] = {
