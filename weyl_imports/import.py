@@ -15,7 +15,7 @@ POSTGRES_PORT = "5432"
 POSTGRES_DB = "postgres"
 POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = "dilectic"
-CATALOGUE_NAMESPACE = "production"
+CATALOGUE_NAMESPACE = "open-source"
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s [%(asctime)s] %(name)s: %(message)s')
 
