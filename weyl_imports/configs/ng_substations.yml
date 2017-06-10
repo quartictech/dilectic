@@ -1,0 +1,9 @@
+---
+tag: "small"
+type: "geojson"
+name: "National Grid Substations"
+description: "National Grid Substation Infrastructure"
+attribution: "National Grid"
+path: "/datasets/Substations.geojson"
+map:
+  titleAttribute: "Substation2"

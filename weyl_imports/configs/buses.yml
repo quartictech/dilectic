@@ -1,0 +1,11 @@
+---
+tag: "live"
+type: "websocket"
+name: "Buses"
+description: "London Buses"
+attribution: "TfL"
+context_path: "/tayo"
+map:
+  blessedAttributes:
+    - "route"
+    - "vehicle id"

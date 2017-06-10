@@ -1,5 +1,0 @@
----
-type: "postgres"
-name: "Green Belt 2014-2015"
-description: "Local Authority Green Belt Boundaries 2014-2015"
-query: "SELECT gb_name as name, area_ha, perim_km, la_name, year, ST_Force_2d(geom) as geom from local_authority_green_belt_boundaries_2014_15"

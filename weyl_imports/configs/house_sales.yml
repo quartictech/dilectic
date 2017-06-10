@@ -1,0 +1,15 @@
+---
+tag: "large"
+type: "postgres"
+name:  "London House Sales"
+description:  "London House Sales and Prices"
+query:  "SELECT * from london_price_houses_geocoded"
+map:
+  blessedAttributes:
+    - "addr1"
+    - "addr2"
+    - "addr3"
+    - "addr4"
+    - "postcode"
+    - "price"
+    - "dateprocessed"

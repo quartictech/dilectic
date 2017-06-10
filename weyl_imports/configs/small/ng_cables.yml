@@ -1,8 +1,0 @@
----
-type: "geojson"
-name: "National Grid Cables"
-description: "National Grid Cables Infrastructure"
-attribution: "National Grid"
-path: "/datasets/Cable.geojson"
-map:
-  titleAttribute: "CABLE_ROUT"

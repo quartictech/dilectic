@@ -45,7 +45,10 @@ if __name__ == "__main__":
                 "attribution": partial_config.get("attribution", "<< Unknown >>"),
             },
             "extensions": {
-                "map": partial_config.get("map", {})
+                "map": partial_config.get("map", {}),
+                "tags": [
+                    partial_config["tag"]
+                ]
             }
         }
 
