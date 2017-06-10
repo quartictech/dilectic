@@ -43,13 +43,11 @@ if __name__ == "__main__":
                 "name": partial_config["name"],
                 "description": partial_config["description"],
                 "attribution": partial_config.get("attribution", "<< Unknown >>"),
+            },
+            "extensions": {
+                "map": partial_config.get("map", {})
             }
         }
-
-        if "map" in partial_config:
-            full_config["extensions"] = {
-                "map": partial_config["map"]
-            }
 
         if partial_config["type"] == "postgres":
             full_config["locator"] = {
