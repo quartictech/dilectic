@@ -1,0 +1,17 @@
+---
+tag: "small"
+type: "postgres"
+name: "Commercial"
+description: "Commercial and other buildings"
+query: "SELECT * FROM planet_osm_polygon where amenity in ('youth_centre',
+  'spa', 'events_venue', 'yes', 'deli', 'ice_cream', 'university', 'betting_shop',
+  'swimming_pool', 'food_court', 'exhibition_center', 'cafe', 'fast_food', 'barbers',
+  'bank', 'internet_cafe', 'pharmacy', 'shop', 'shops', 'cobbler', 'cinema', 'optician', 'beautician',
+  'shopping_parade', 'conference_venue', 'minicab_office')
+  or shop in ('supermarket', 'department_store', 'convenience', 'pet', 'music', 'florist',
+  'off_licence', 'car', 'car_repair', 'reprographics', 'vacuum_cleaner', 'musical_instrument',
+  'photography', 'stationary', 'cosmetics', 'deli', 'ice_cream', 'luxury', 'jewellery', 'variety_store',
+  'beads', 'boat', 'plumbers', 'cigar', 'party_goods', 'gambling', 'gallery', 'lighting', 'lingerie',
+  'electrical', 'clothes', 'butcher', 'catering', 'shopping_centre', 'gift', 'alcohol', 'sports', 'shoes',
+  'coffee', 'games', 'hairdresser', 'wholesale', 'luggage', 'underwear', 'wine', 'off_license', 'market',
+  'cafe', 'salon', 'fast_food', 'bakery', 'boutique', 'newsagent', 'estate_agent'  )"

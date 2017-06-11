@@ -1,5 +1,0 @@
----
-type: "postgres"
-name: "McDonalds™"
-description: "McDonalds™ Locations"
-query: "SELECT * from mcdonalds_geocoded"

@@ -1,0 +1,9 @@
+---
+tag: "small"
+type: "geojson"
+name: "National Grid OHL"
+description: "National Grid Overhead Line Infrastructure"
+attribution: "National Grid"
+path: "/datasets/OHL.geojson"
+map:
+  titleAttribute: "CIRCUIT1"

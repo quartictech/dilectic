@@ -1,5 +1,0 @@
----
-type: "postgres"
-name: "Roads"
-description: "Roads"
-query: "SELECT *,  (case operator when 'Transport for London' then 'TFL' when 'Highways Agency' then 'Highways Agency' when 'City of Westminster' then 'City of Westminster' when 'London Borough of Haringey' then 'London Borough of Haringey' else 'Other' END) as \"Managed By\"  from planet_osm_line where highway is not null"

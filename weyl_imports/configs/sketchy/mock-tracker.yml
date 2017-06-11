@@ -1,6 +1,0 @@
----
-type: "websocket"
-name: "Mock Tracking"
-description: "Mock GPS Location Tracking"
-attribution: "Quartic"
-context_path: "/mock-tracker"

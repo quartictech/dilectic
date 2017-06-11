@@ -1,6 +1,0 @@
----
-type: "geojson"
-name: "Traffic Disruptions"
-description: "Road traffic disruptions"
-attribution: "TfL"
-path: "/datasets/disruptions.geojson"

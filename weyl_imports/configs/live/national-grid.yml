@@ -1,6 +1,0 @@
----
-type: "websocket"
-name: "National Grid Instantaneous Flows"
-description: "Real time (2mins) National Grid Instantaneous Gas Flows"
-attribution: "National Grid"
-context_path: "/national-grid"

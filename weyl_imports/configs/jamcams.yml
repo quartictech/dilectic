@@ -1,0 +1,13 @@
+---
+tag: "small"
+type: "postgres"
+name: "Jamcams"
+description: "TFL traffic camera feeds"
+query: "select * from jamcams_geocoded"
+map:
+  titleAttribute: "view"
+  blessedAttributes:
+    - "location"
+    - "date"
+    - "postcode"
+  imageAttribute: "videofile"

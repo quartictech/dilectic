@@ -1,5 +1,0 @@
----
-type: "geojson"
-name:  "Road Traffic Counts"
-description: "AADF Road Traffic Counts"
-path: "/datasets/AADF-data-major-roads.geojson"

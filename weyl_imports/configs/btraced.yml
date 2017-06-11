@@ -1,0 +1,9 @@
+---
+tag: "live"
+type: "websocket"
+name: "Quartic Tracking"
+description: "Quartic GPS Location Tracking"
+attribution: "Quartic"
+context_path: "/btraced-tracker"
+map:
+  viewType: "LOCATION_AND_TRACK"

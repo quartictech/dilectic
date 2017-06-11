@@ -1,0 +1,9 @@
+---
+tag: "small"
+type: "geojson"
+name: "National Grid Gas Sites"
+description: "National Grid Gas Sites Infrastructure"
+attribution: "National Grid"
+path: "/datasets/Gas_Site.geojson"
+map:
+  titleAttribute: "SITE_NAME"

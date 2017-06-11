@@ -1,0 +1,9 @@
+---
+tag: "small"
+type: "geojson"
+name: "National Grid Towers"
+description: "National Grid Tower Infrastructure"
+attribution: "National Grid"
+path: "/datasets/Towers.geojson"
+map:
+  titleAttribute: "TOWER_ASSE"
