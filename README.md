@@ -12,3 +12,7 @@
     cd weyl_imports
     pip install -r requirements.txt
     python import.py -p jdbc:postgresql://postgis/postgres yml_configs/*
+
+## License
+
+This project is made available under [BSD License 2.0](https://github.com/quartictech/dilectic/blob/develop/LICENSE).
